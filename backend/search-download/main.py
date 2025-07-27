@@ -61,8 +61,7 @@ def download_song(youtube_url, output_dir=None):
     return filename, temp_dir if 'temp_dir' in locals() else None
 
 def upload_to_supabase(file_path, bucket_name="temp-audio-storage"):
-    base_name = os.path.basename(file_path)
-    unique_name = f"{uuid.uuid4().hex}_{base_name}"  # unique prefix
+    unique_name = f"{uuid.uuid4().hex}"  # unique prefix
     with open(file_path, "rb") as f:
         data = f.read()
 

@@ -31,7 +31,7 @@ export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
         {/* Main heading */}
         <div className="mb-12">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-primary bg-clip-text text-transparent leading-tight mb-6">
-            MixFlow
+            WE-DJ
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Discover the perfect transitions for your DJ sets. 

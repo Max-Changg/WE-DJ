@@ -72,6 +72,8 @@ def batch_process_songs(song_paths, output_dir):
     
     # Process in parallel
     with Pool() as pool:
-        results = pool.map(process_single, song_paths)
+        from functools import partial
+        func = partial(process_single, output_dir=output_dir)
+        results = pool.map(func, song_paths)
     
     return results  # Returns list of created directories

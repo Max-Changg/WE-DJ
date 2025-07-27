@@ -19,23 +19,29 @@ interface SearchBarProps {
 // Function to load songs from the database file
 const loadSongsFromDatabase = async (): Promise<Song[]> => {
   try {
-    const response = await fetch("/songs.txt");
+    const response = await fetch("/song_list.txt");
     const text = await response.text();
 
     return text
       .trim()
       .split("\n")
       .filter((line) => line.trim())
-      .map((line) => {
-        const [id, title, artist, bpm, key] = line.split("|");
-        return {
-          id: id.trim(),
-          title: title.trim(),
-          artist: artist.trim(),
-          bpm: bpm ? parseInt(bpm.trim()) : undefined,
-          key: key ? key.trim() : undefined,
-        };
-      });
+      .map((line, index) => {
+        // Parse the format: "1. Title - Artist"
+        const match = line.match(/^\s*(\d+)\.\s*(.+?)\s*-\s*(.+)$/);
+        if (match) {
+          const [, id, title, artist] = match;
+          return {
+            id: id.trim(),
+            title: title.trim(),
+            artist: artist.trim(),
+            bpm: undefined, // BPM not available in this format
+            key: undefined, // Key not available in this format
+          };
+        }
+        return null;
+      })
+      .filter((song): song is NonNullable<typeof song> => song !== null);
   } catch (error) {
     console.error("Error loading songs from database:", error);
     return [];

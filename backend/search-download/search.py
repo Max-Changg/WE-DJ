@@ -5,12 +5,21 @@ from dotenv import load_dotenv
 import os
 import uuid
 import tempfile
+import shutil
 
 load_dotenv()
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def save_to_database_folder(filepath, destination_folder="./database"):
+    os.makedirs(destination_folder, exist_ok=True)
+    filename = os.path.basename(filepath)
+    destination_path = os.path.join(destination_folder, filename)
+    shutil.copy2(filepath, destination_path)
+    return destination_path
+
 
 def search_youtube(query, max_results=5):
     ydl_opts = {
@@ -84,6 +93,10 @@ def find_and_download_song(query):
         print(f"Uploaded successfully! Public URL: {public_url}")
     else:
         print("Upload failed.")
+
+    print("Saving MP3 to local database folder...")
+    local_path = save_to_database_folder(filepath)
+    print(f"Saved to: {local_path}")
 
     # Cleanup temp folder if used
     if temp_dir:

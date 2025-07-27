@@ -3,7 +3,8 @@ import json
 import numpy as np
 
 CACHE_FILE = 'analysis_cache.json'
-SONG_COLLECTION_FOLDER = '/Users/stevecho/Desktop/Hackathon 2025/Song Database'  # Set your folder name here
+cur_dir = is.getcwd() + '/backend/database/'
+SONG_COLLECTION_FOLDER = cur_dir  # Set your folder name here
 
 # Camelot mapping for (key, scale)
 CAMELOT_MAP = {

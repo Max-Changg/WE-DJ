@@ -1,10 +1,15 @@
 from pydub import AudioSegment
+import os
+
+stems_dir = os.getcwd() + "/backend/database/stems/"
+sfx_dir = os.getcwd() + "/backend/database/sfx/"
+output_dir = os.getcwd() + "/backend/database/transitions/"
 
 def load_stems(name):
-    vocals = AudioSegment.from_file("stems/" + name + "/vocals.wav")
-    bass   = AudioSegment.from_file("stems/" + name + "/bass.wav")
-    drums  = AudioSegment.from_file("stems/" + name + "/drums.wav")
-    other  = AudioSegment.from_file("stems/" + name + "/other.wav")
+    vocals = AudioSegment.from_file(stems_dir + name + "/vocals.wav")
+    bass   = AudioSegment.from_file(stems_dir + name + "/bass.wav")
+    drums  = AudioSegment.from_file(stems_dir + name + "/drums.wav")
+    other  = AudioSegment.from_file(stems_dir + name + "/other.wav")
     return vocals, bass, drums, other
 
 def build_instrumental(bass, drums, other):
@@ -48,7 +53,7 @@ def crossfade_transition(song1_file, song2_file):
     # Full transition
     final_transition = full_a + a_fade_out + b_fade_in + instruments_changing
 
-    final_transition.export("crossfade_dj_transition.mp3", format="mp3")
+    final_transition.export(output_dir + "crossfade_dj_transition.mp3", format="mp3")
     print("DJ Transition created!")
 
 def scratch_transition(song1_file, song2_file):
@@ -60,7 +65,7 @@ def scratch_transition(song1_file, song2_file):
     instrumental_b = build_instrumental(bass_b, drums_b, other_b)
     song_a = instrumental_a.overlay(vocals_a)
     song_b = instrumental_b.overlay(vocals_b)
-    # scratch = AudioSegment.from_file("sfx/scratch.wav")[:250]
+    scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")[:250]
     # silence = AudioSegment.silent(duration=100)
 
     scratch_start = 15000
@@ -70,7 +75,7 @@ def scratch_transition(song1_file, song2_file):
 
     # Scratching
     # scratch_segment = scratch + scratch + scratch + scratch
-    scratch_loop = AudioSegment.from_file("sfx/scratch_loop.wav")[:500]
+    scratch_loop = AudioSegment.from_file(sfx_dir + "scratch_loop.wav")[:600]
 
     # Full song B
     full_b = song_b
@@ -78,8 +83,8 @@ def scratch_transition(song1_file, song2_file):
     # Full transition
     final_transition = full_a + scratch_loop + full_b
 
-    final_transition.export("scratch_dj_transition.mp3", format="mp3")
+    final_transition.export(output_dir + "scratch_dj_transition.mp3", format="mp3")
     print("DJ Transition created!")
 
 if __name__ == '__main__':
-    scratch_transition("mc_hammer", "gangnam")
+    crossfade_transition("mc_hammer", "gangnam")

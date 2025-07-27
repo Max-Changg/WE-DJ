@@ -54,7 +54,7 @@ def split_audio_with_demucs(input_file, output_dir):
         torchaudio.save(output_path, stem, rate)
         print(f"Saved {name} to {output_path}")
 
-def process_single(song_path, output_dir="stems"):
+def process_single(song_path, output_dir):
     """Process one song and save to its own subfolder"""
     song_name = os.path.splitext(os.path.basename(song_path))[0]
     song_output_dir = os.path.join(output_dir, song_name)
@@ -64,7 +64,7 @@ def process_single(song_path, output_dir="stems"):
     split_audio_with_demucs(song_path, song_output_dir)
     return song_output_dir
 
-def batch_process_songs(song_paths, output_dir="stems"):
+def batch_process_songs(song_paths, output_dir):
     """Process multiple songs with parallel processing, saving each to its own subfolder"""
     
     # Create main output directory if needed

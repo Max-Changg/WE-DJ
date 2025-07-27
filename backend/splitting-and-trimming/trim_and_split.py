@@ -7,15 +7,16 @@ def split_and_trim_all():
     song_chorus_names = []
 
     # chorus extraction
-    for filename in os.listdir(cur_dir + "/songs/"):
-        song_name = filename[:-4]
-        song_chorus_names.append("choruses/" + song_name + "_chorus.mp3")
-        print(f"Extracting song {song_name}!")
-        extract_chorus("songs/" + song_name + ".mp3", "choruses/" + song_name + "_chorus.mp3", duration=30)
+    for filename in os.listdir(cur_dir + "/backend/database/"):
+        if filename.lower().endswith(".mp3"):
+            song_name = filename[:-4]
+            song_chorus_names.append(cur_dir + "/backend/database/choruses/" + song_name + "_chorus.mp3")
+            print(f"Extracting song {song_name}!")
+            extract_chorus(cur_dir + "/backend/database/" + song_name + ".mp3", cur_dir + "/backend/database/choruses/" + song_name + "_chorus.mp3", duration=30)
 
     # stem splitting
     print("Starting audio separation...")
-    batch_process_songs(song_chorus_names)
+    batch_process_songs(song_chorus_names, cur_dir + "/backend/database/stems/")
     print("Separation complete!")
 
 def split_and_trim(song_name):
@@ -29,4 +30,4 @@ def split_and_trim(song_name):
     process_single(cur_dir + "/backend/database/choruses/" + song_name + "_chorus.mp3", cur_dir + "/backend/database/stems/")
 
 if __name__ == '__main__':
-    split_and_trim("gangnam")
+    split_and_trim_all()

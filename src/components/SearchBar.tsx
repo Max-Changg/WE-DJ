@@ -16,34 +16,31 @@ interface SearchBarProps {
   className?: string;
 }
 
-// Function to load songs from the database file
-const loadSongsFromDatabase = async (): Promise<Song[]> => {
-  try {
-    const response = await fetch("/song_list.txt");
-    const text = await response.text();
+// Function to search songs using the music autocomplete API
+const searchSongsFromAPI = async (query: string): Promise<Song[]> => {
+  if (!query.trim()) return [];
 
-    return text
-      .trim()
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line, index) => {
-        // Parse the format: "1. Title - Artist"
-        const match = line.match(/^\s*(\d+)\.\s*(.+?)\s*-\s*(.+)$/);
-        if (match) {
-          const [, id, title, artist] = match;
-          return {
-            id: id.trim(),
-            title: title.trim(),
-            artist: artist.trim(),
-            bpm: undefined, // BPM not available in this format
-            key: undefined, // Key not available in this format
-          };
-        }
-        return null;
-      })
-      .filter((song): song is NonNullable<typeof song> => song !== null);
+  try {
+    const response = await fetch(
+      `https://musicautocomplete.deno.dev/search?q=${encodeURIComponent(query)}`
+    );
+    const data = await response.json();
+
+    if (data.error) {
+      console.error("API Error:", data.type);
+      return [];
+    }
+
+    // Convert API results to Song format
+    return data.results.map((title: string, index: number) => ({
+      id: `api-${index}`,
+      title: title,
+      artist: "Unknown Artist", // API doesn't provide artist info
+      bpm: undefined,
+      key: undefined,
+    }));
   } catch (error) {
-    console.error("Error loading songs from database:", error);
+    console.error("Error fetching from music autocomplete API:", error);
     return [];
   }
 };
@@ -53,46 +50,28 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
   const [suggestions, setSuggestions] = useState<Song[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load songs from database on component mount
   useEffect(() => {
-    const loadSongs = async () => {
-      setIsLoading(true);
-      const loadedSongs = await loadSongsFromDatabase();
-      setSongs(loadedSongs);
-      setIsLoading(false);
-    };
+    if (query.length > 0) {
+      const searchSongs = async () => {
+        setIsLoading(true);
+        const results = await searchSongsFromAPI(query);
+        setSuggestions(results.slice(0, 5));
+        setShowSuggestions(true);
+        setSelectedIndex(-1);
+        setIsLoading(false);
+      };
 
-    loadSongs();
-  }, []);
-
-  useEffect(() => {
-    if (query.length > 0 && !isLoading) {
-      // Search based on first letters of song titles and artist names
-      const filtered = songs.filter((song) => {
-        const titleWords = song.title.toLowerCase().split(" ");
-        const artistWords = song.artist.toLowerCase().split(" ");
-        const queryWords = query.toLowerCase().split(" ");
-
-        // Check if each query word matches the beginning of any title word OR artist word
-        return queryWords.every(
-          (queryWord) =>
-            titleWords.some((titleWord) => titleWord.startsWith(queryWord)) ||
-            artistWords.some((artistWord) => artistWord.startsWith(queryWord))
-        );
-      });
-
-      setSuggestions(filtered.slice(0, 5));
-      setShowSuggestions(true);
-      setSelectedIndex(-1);
+      // Debounce the API call
+      const timeoutId = setTimeout(searchSongs, 300);
+      return () => clearTimeout(timeoutId);
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  }, [query, songs, isLoading]);
+  }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions) return;
@@ -136,7 +115,7 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
           type="text"
           placeholder={
             isLoading
-              ? "Loading songs..."
+              ? "Searching..."
               : "Search for a song to transition from..."
           }
           value={query}

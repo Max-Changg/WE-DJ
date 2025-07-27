@@ -16,34 +16,69 @@ interface SearchBarProps {
   className?: string;
 }
 
-// Mock song database - in a real app this would come from a music API
-const mockSongs: Song[] = [
-  { id: "1", title: "Levels", artist: "Avicii", bpm: 126, key: "C#m" },
-  { id: "2", title: "Titanium", artist: "David Guetta ft. Sia", bpm: 126, key: "F#" },
-  { id: "3", title: "Animals", artist: "Martin Garrix", bpm: 128, key: "F#m" },
-  { id: "4", title: "Clarity", artist: "Zedd ft. Foxes", bpm: 128, key: "G" },
-  { id: "5", title: "Wake Me Up", artist: "Avicii", bpm: 124, key: "Bm" },
-  { id: "6", title: "Lean On", artist: "Major Lazer & DJ Snake", bpm: 98, key: "F#m" },
-  { id: "7", title: "Waiting For Love", artist: "Avicii", bpm: 128, key: "F#m" },
-  { id: "8", title: "Firestone", artist: "Kygo ft. Conrad Sewell", bpm: 102, key: "C#m" },
-  { id: "9", title: "Midnight City", artist: "M83", bpm: 104, key: "Bb" },
-  { id: "10", title: "One More Time", artist: "Daft Punk", bpm: 123, key: "F#m" },
-];
+// Function to load songs from the database file
+const loadSongsFromDatabase = async (): Promise<Song[]> => {
+  try {
+    const response = await fetch("/songs.txt");
+    const text = await response.text();
+
+    return text
+      .trim()
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => {
+        const [id, title, artist, bpm, key] = line.split("|");
+        return {
+          id: id.trim(),
+          title: title.trim(),
+          artist: artist.trim(),
+          bpm: bpm ? parseInt(bpm.trim()) : undefined,
+          key: key ? key.trim() : undefined,
+        };
+      });
+  } catch (error) {
+    console.error("Error loading songs from database:", error);
+    return [];
+  }
+};
 
 export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Song[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Load songs from database on component mount
   useEffect(() => {
-    if (query.length > 0) {
-      const filtered = mockSongs.filter(
-        (song) =>
-          song.title.toLowerCase().includes(query.toLowerCase()) ||
-          song.artist.toLowerCase().includes(query.toLowerCase())
-      );
+    const loadSongs = async () => {
+      setIsLoading(true);
+      const loadedSongs = await loadSongsFromDatabase();
+      setSongs(loadedSongs);
+      setIsLoading(false);
+    };
+
+    loadSongs();
+  }, []);
+
+  useEffect(() => {
+    if (query.length > 0 && !isLoading) {
+      // Search based on first letters of song titles and artist names
+      const filtered = songs.filter((song) => {
+        const titleWords = song.title.toLowerCase().split(" ");
+        const artistWords = song.artist.toLowerCase().split(" ");
+        const queryWords = query.toLowerCase().split(" ");
+
+        // Check if each query word matches the beginning of any title word OR artist word
+        return queryWords.every(
+          (queryWord) =>
+            titleWords.some((titleWord) => titleWord.startsWith(queryWord)) ||
+            artistWords.some((artistWord) => artistWord.startsWith(queryWord))
+        );
+      });
+
       setSuggestions(filtered.slice(0, 5));
       setShowSuggestions(true);
       setSelectedIndex(-1);
@@ -51,7 +86,7 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  }, [query]);
+  }, [query, songs, isLoading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions) return;
@@ -59,7 +94,7 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => 
+        setSelectedIndex((prev) =>
           prev < suggestions.length - 1 ? prev + 1 : prev
         );
         break;
@@ -93,12 +128,17 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Search for a song to transition from..."
+          placeholder={
+            isLoading
+              ? "Loading songs..."
+              : "Search for a song to transition from..."
+          }
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          disabled={isLoading}
           className="pl-12 pr-4 py-6 text-lg bg-card border-border focus:border-primary focus:ring-primary focus:shadow-glow-primary transition-all duration-300"
         />
       </div>
@@ -118,8 +158,12 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <div className="font-medium text-foreground">{song.title}</div>
-                  <div className="text-sm text-muted-foreground">{song.artist}</div>
+                  <div className="font-medium text-foreground">
+                    {song.title}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {song.artist}
+                  </div>
                 </div>
                 <div className="text-xs text-muted-foreground flex gap-2">
                   {song.bpm && <span>{song.bpm} BPM</span>}

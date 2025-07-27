@@ -1,12 +1,39 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { HeroSection } from "@/components/HeroSection";
+import { TransitionResults } from "@/components/TransitionResults";
+
+interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  bpm?: number;
+  key?: string;
+}
 
 const Index = () => {
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+
+  const handleSongSelect = (song: Song) => {
+    setSelectedSong(song);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {!selectedSong ? (
+        <HeroSection onSongSelect={handleSongSelect} />
+      ) : (
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
+          <div className="mb-8">
+            <button
+              onClick={() => setSelectedSong(null)}
+              className="text-muted-foreground hover:text-foreground transition-colors mb-4 flex items-center gap-2"
+            >
+              ← Back to search
+            </button>
+          </div>
+          <TransitionResults sourceSong={selectedSong} />
+        </div>
+      )}
     </div>
   );
 };

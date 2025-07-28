@@ -19,7 +19,7 @@ sys.path.append(another_dir)
 from transition_generator import crossfade_transition, scratch_transition
 
 
-def connect(song1, song2):
+def connect(song1):
     song2 = get_best_transition(song1)
     print(song2)
 
@@ -30,4 +30,4 @@ def connect(song1, song2):
     scratch_transition(song1, song2)
 
 if __name__ == '__main__':
-    connect('gangnam', 'XXXTENTACION - Look at Me!')
+    connect('gangnam')

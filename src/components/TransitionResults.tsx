@@ -19,6 +19,7 @@ interface TransitionSong extends Song {
 interface TransitionResultsProps {
   sourceSong: Song;
   className?: string;
+  transitionURL: string;
 }
 
 // Mock transition algorithm - in a real app this would be more sophisticated
@@ -144,6 +145,7 @@ const generateTransitions = (sourceSong: Song): TransitionSong[] => {
 export const TransitionResults = ({
   sourceSong,
   className,
+  transitionURL,
 }: TransitionResultsProps) => {
   console.log("TransitionResults rendered with sourceSong:", sourceSong);
   const transitions = generateTransitions(sourceSong);
@@ -152,9 +154,7 @@ export const TransitionResults = ({
   return (
     <div className={cn("w-full space-y-6", className)}>
       <div className="text-center mb-8">
-        <h2 className="font-bold text-foreground mb-2">
-          Perfect transitions
-        </h2>
+        <h2 className="font-bold text-foreground mb-2">Perfect transitions</h2>
       </div>
 
       <div className="max-h-96 overflow-y-auto space-y-4 pr-2">
@@ -203,6 +203,7 @@ export const TransitionResults = ({
                 <button className="flex items-center justify-center w-10 h-10 bg-primary/10 hover:bg-primary hover:text-primary-foreground rounded-lg transition-all duration-200 hover:shadow-glow-primary">
                   <Play className="h-4 w-4" />
                 </button>
+                <audio controls src={transitionURL} />
               </div>
             </div>
           </Card>

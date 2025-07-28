@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import sys
@@ -30,6 +30,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+file_path = os.path.join(parent_dir, "database", "transitions", "scratch_dj_transition.mp3")
+
 @app.get('/api/search_song')
 def search_song(query: str):
     song_name = find_and_download_song(query)[:-4]
@@ -38,3 +40,8 @@ def search_song(query: str):
     split_and_trim(song2)
     crossfade_transition(song_name, song2)
     scratch_transition(song_name, song2)
+    return FileResponse(
+        path=file_path,
+        media_type="audio/mpeg",
+        filename="scratch_dj_transition.mp3"
+    )

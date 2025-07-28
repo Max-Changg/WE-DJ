@@ -10,11 +10,16 @@ interface Song {
 }
 
 interface HeroSectionProps {
-  onSongSelect: (song: Song) => void;
+  onSongSelect: (song: string) => void;
   className?: string;
+  setTransitionURL: (url: string) => void;
 }
 
-export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
+export const HeroSection = ({
+  onSongSelect,
+  className,
+  setTransitionURL,
+}: HeroSectionProps) => {
   return (
     <section
       className={cn(
@@ -79,6 +84,7 @@ export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
           <SearchBar
             onSongSelect={onSongSelect}
             className="w-full max-w-2xl mx-auto"
+            setTransitionURL={setTransitionURL}
           />
           {/* Call to action */}
           <p className="text-muted-foreground mt-4">

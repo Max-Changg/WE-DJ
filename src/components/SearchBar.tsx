@@ -13,8 +13,9 @@ interface Song {
 }
 
 interface SearchBarProps {
-  onSongSelect: (song: Song) => void;
+  onSongSelect: (song: string) => void;
   className?: string;
+  setTransitionURL: (url: string) => void;
 }
 
 // Function to search and download song using the backend API
@@ -22,42 +23,22 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
   if (!query.trim()) return null;
 
   try {
-    console.log("Searching for song:", query);
     const response = await fetch(
-      `http://localhost:8000/api/search_song?query=${encodeURIComponent(
-        query
-      )}+official+audio`
+      `http://127.0.0.1:8000/api/search_song?query=${query}+official+audio`,
+      {
+        method: "GET",
+      }
     );
 
     if (!response.ok) {
-      throw new Error(`Backend server error! Status: ${response.status}`);
+      console.error("Failed to fetch audio");
+      return;
     }
 
-    if (!response.body) {
-      throw new Error("No response from server");
-    }
-
-    const songName = await response.text();
-    console.log("API Response - Downloaded song name:", songName);
-
-    // Parse the song name to extract title and artist
-    // Assuming format: "Title - Artist.mp3" or just "Title.mp3"
-    const cleanName = songName.replace(".mp3", "");
-    const parts = cleanName.split(" - ");
-    console.log("Parsed song parts:", parts);
-
-    const title = parts[0] || cleanName;
-    const artist = parts[1] || "Unknown Artist";
-
-    const songData = {
-      id: `backend-${Date.now()}`,
-      title: title,
-      artist: artist,
-      bpm: undefined,
-      key: undefined,
-    };
-    console.log("Created song object:", songData);
-    return songData;
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    console.log(blob.size);
+    return url;
   } catch (error) {
     console.error("Error searching/downloading song:", error);
     if (
@@ -72,7 +53,11 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
   }
 };
 
-export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
+export const SearchBar = ({
+  onSongSelect,
+  className,
+  setTransitionURL,
+}: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,12 +76,8 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
       setError(null);
       try {
         const song = await searchAndDownloadSong(query);
-        if (song) {
-          console.log("Selecting song:", song);
-          onSongSelect(song);
-        } else {
-          setError("Failed to find song. Please try again.");
-        }
+        setTransitionURL(song);
+        onSongSelect(query);
       } catch (error) {
         if (
           error instanceof TypeError &&

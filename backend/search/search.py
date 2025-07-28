@@ -13,13 +13,22 @@ SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def save_to_database_folder(filepath, destination_folder="./database"):
-    os.makedirs(destination_folder, exist_ok=True)
+def save_to_database_folder(filepath, destination_folder="database"):
+    # Get absolute path to the current script (server/main.py)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Move up one level (to project root), then go into backend/database
+    database_dir = os.path.abspath(os.path.join(current_dir, "..", destination_folder))
+    
+    # Make sure folder exists
+    os.makedirs(database_dir, exist_ok=True)
+    
     filename = os.path.basename(filepath)
-    destination_path = os.path.join(destination_folder, filename)
+    destination_path = os.path.join(database_dir, filename)
+    
     shutil.copy2(filepath, destination_path)
+    
     return destination_path
-
 
 def search_youtube(query, max_results=5):
     ydl_opts = {
@@ -45,7 +54,6 @@ def search_youtube(query, max_results=5):
 
 def download_song(youtube_url, output_dir=None):
     if output_dir is None:
-        # Create a temp directory
         temp_dir = tempfile.TemporaryDirectory()
         output_dir = temp_dir.name
     else:
@@ -66,11 +74,10 @@ def download_song(youtube_url, output_dir=None):
         filename = ydl.prepare_filename(info)
         filename = os.path.splitext(filename)[0] + ".mp3"
 
-    # Return both filename and temp_dir so caller can keep temp_dir alive
     return filename, temp_dir if 'temp_dir' in locals() else None
 
 def upload_to_supabase(file_path, bucket_name="temp-audio-storage"):
-    unique_name = f"{uuid.uuid4().hex}"  # unique prefix
+    unique_name = f"{uuid.uuid4().hex}"
     with open(file_path, "rb") as f:
         data = f.read()
 
@@ -98,6 +105,5 @@ def find_and_download_song(query):
     local_path = save_to_database_folder(filepath)
     print(f"Saved to: {local_path}")
 
-    # Cleanup temp folder if used
     if temp_dir:
         temp_dir.cleanup()

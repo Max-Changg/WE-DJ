@@ -16,10 +16,15 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
   return (
-    <section className={cn("min-h-screen flex flex-col items-center justify-center relative overflow-hidden", className)}>
+    <section
+      className={cn(
+        "min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden",
+        className
+      )}
+    >
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-bg" />
-      
+
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/30 rounded-full blur-3xl animate-pulse" />
@@ -34,9 +39,11 @@ export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
             WE-DJ
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Discover the perfect transitions for your DJ sets. 
+            Discover the perfect transitions for your DJ sets.
             <br />
-            <span className="text-accent font-medium">Find songs that flow seamlessly together.</span>
+            <span className="text-accent font-medium">
+              Find songs that flow seamlessly together.
+            </span>
           </p>
         </div>
 
@@ -45,29 +52,39 @@ export const HeroSection = ({ onSongSelect, className }: HeroSectionProps) => {
           <div className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6">
             <div className="text-2xl mb-2">🎵</div>
             <h3 className="font-semibold text-foreground mb-2">BPM Matching</h3>
-            <p className="text-sm text-muted-foreground">Find songs with compatible tempos for smooth transitions</p>
+            <p className="text-sm text-muted-foreground">
+              Find songs with compatible tempos for smooth transitions
+            </p>
           </div>
           <div className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6">
             <div className="text-2xl mb-2">🎹</div>
-            <h3 className="font-semibold text-foreground mb-2">Harmonic Mixing</h3>
-            <p className="text-sm text-muted-foreground">Discover tracks in compatible keys for seamless blends</p>
+            <h3 className="font-semibold text-foreground mb-2">
+              Harmonic Mixing
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Discover tracks in compatible keys for seamless blends
+            </p>
           </div>
           <div className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6">
             <div className="text-2xl mb-2">⚡</div>
             <h3 className="font-semibold text-foreground mb-2">Energy Flow</h3>
-            <p className="text-sm text-muted-foreground">Maintain the perfect energy progression in your sets</p>
+            <p className="text-sm text-muted-foreground">
+              Maintain the perfect energy progression in your sets
+            </p>
           </div>
         </div>
 
         {/* Search bar */}
-        <div className="mb-8">
-          <SearchBar onSongSelect={onSongSelect} />
+        <div className="w-full flex flex-col items-center justify-center mb-8">
+          <SearchBar
+            onSongSelect={onSongSelect}
+            className="w-full max-w-2xl mx-auto"
+          />
+          {/* Call to action */}
+          <p className="text-muted-foreground mt-4">
+            Start typing the name of any song to find perfect transition matches
+          </p>
         </div>
-
-        {/* Call to action */}
-        <p className="text-muted-foreground">
-          Start typing the name of any song to find perfect transition matches
-        </p>
       </div>
     </section>
   );

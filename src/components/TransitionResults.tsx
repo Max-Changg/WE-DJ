@@ -145,30 +145,16 @@ export const TransitionResults = ({
   sourceSong,
   className,
 }: TransitionResultsProps) => {
+  console.log("TransitionResults rendered with sourceSong:", sourceSong);
   const transitions = generateTransitions(sourceSong);
+  console.log("Generated transitions:", transitions);
 
   return (
-    <div className={cn("w-full max-w-4xl space-y-6", className)}>
+    <div className={cn("w-full space-y-6", className)}>
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-foreground mb-2">
-          Perfect transitions from
+        <h2 className="font-bold text-foreground mb-2">
+          Perfect transitions
         </h2>
-        <div className="inline-flex items-center gap-2 bg-gradient-card px-4 py-2 rounded-lg border border-border">
-          <Music className="h-5 w-5 text-primary" />
-          <span className="text-lg font-medium text-foreground">
-            {sourceSong.title} - {sourceSong.artist}
-          </span>
-          {sourceSong.bpm && (
-            <Badge variant="outline" className="ml-2">
-              {sourceSong.bpm} BPM
-            </Badge>
-          )}
-          {sourceSong.key && (
-            <Badge variant="outline" className="ml-1">
-              {sourceSong.key}
-            </Badge>
-          )}
-        </div>
       </div>
 
       <div className="max-h-96 overflow-y-auto space-y-4 pr-2">

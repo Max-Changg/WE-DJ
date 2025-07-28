@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Search } from "lucide-react";
+import { Search, ArrowRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface Song {
@@ -31,14 +32,17 @@ const searchSongsFromAPI = async (query: string): Promise<Song[]> => {
       return [];
     }
 
+    console.log("API response:", data);
     // Convert API results to Song format
-    return data.results.map((title: string, index: number) => ({
+    const songs = data.results.map((title: string, index: number) => ({
       id: `api-${index}`,
       title: title,
       artist: "Unknown Artist", // API doesn't provide artist info
       bpm: undefined,
       key: undefined,
     }));
+    console.log("Converted songs:", songs);
+    return songs;
   } catch (error) {
     console.error("Error fetching from music autocomplete API:", error);
     return [];
@@ -91,6 +95,9 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
         e.preventDefault();
         if (selectedIndex >= 0) {
           selectSong(suggestions[selectedIndex]);
+        } else if (suggestions.length > 0) {
+          // If no suggestion is selected but there are suggestions, select the first one
+          selectSong(suggestions[0]);
         }
         break;
       case "Escape":
@@ -101,15 +108,44 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
   };
 
   const selectSong = (song: Song) => {
+    console.log("selectSong called with:", song);
     setQuery(`${song.title} - ${song.artist}`);
     setShowSuggestions(false);
     onSongSelect(song);
   };
 
+  const handleArrowClick = () => {
+    if (query.trim() && !isLoading) {
+      // If there are already suggestions, select the first one
+      if (suggestions.length > 0) {
+        selectSong(suggestions[0]);
+        return;
+      }
+
+      // Otherwise, trigger search manually
+      const searchSongs = async () => {
+        setIsLoading(true);
+        const results = await searchSongsFromAPI(query);
+        setSuggestions(results.slice(0, 5));
+        setShowSuggestions(true);
+        setSelectedIndex(0); // Select the first result
+        setIsLoading(false);
+
+        // Auto-select the first result after a brief delay
+        setTimeout(() => {
+          if (results.length > 0) {
+            selectSong(results[0]);
+          }
+        }, 100);
+      };
+      searchSongs();
+    }
+  };
+
   return (
     <div className={cn("relative w-full max-w-2xl", className)}>
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+      <div className="relative flex items-center">
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
         <Input
           ref={inputRef}
           type="text"
@@ -124,8 +160,20 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
           onFocus={() => query.length > 0 && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           disabled={isLoading}
-          className="pl-12 pr-4 py-6 text-lg bg-card border-border focus:border-primary focus:ring-primary focus:shadow-glow-primary transition-all duration-300"
+          className="pl-12 pr-16 py-6 text-lg bg-card border-border focus:border-primary focus:ring-primary focus:shadow-glow-primary transition-all duration-300"
         />
+        <Button
+          size="sm"
+          disabled={isLoading || !query.trim()}
+          onClick={handleArrowClick}
+          className="absolute right-2 h-10 w-10 p-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-all duration-200 hover:shadow-glow-primary"
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <ArrowRight className="h-4 w-4" />
+          )}
+        </Button>
       </div>
 
       {showSuggestions && suggestions.length > 0 && (

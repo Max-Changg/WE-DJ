@@ -18,39 +18,56 @@ interface SearchBarProps {
 }
 
 // Function to search and download song using the backend API
-const searchAndDownloadSong = async (query: string): Promise<Song | null> => {
+const searchAndDownloadSong = async (query: string): Promise<string | null> => {
   if (!query.trim()) return null;
 
   try {
     console.log("Searching for song:", query);
     const response = await fetch(
-      `http://localhost:8000/api/search_song?query=${encodeURIComponent(query)}`
+      `http://localhost:8000/api/search_song?query=${encodeURIComponent(
+        query
+      )}+official+audio`
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`Backend server error! Status: ${response.status}`);
+    }
+
+    if (!response.body) {
+      throw new Error("No response from server");
     }
 
     const songName = await response.text();
-    console.log("Downloaded song:", songName);
+    console.log("API Response - Downloaded song name:", songName);
 
     // Parse the song name to extract title and artist
     // Assuming format: "Title - Artist.mp3" or just "Title.mp3"
     const cleanName = songName.replace(".mp3", "");
     const parts = cleanName.split(" - ");
+    console.log("Parsed song parts:", parts);
 
     const title = parts[0] || cleanName;
     const artist = parts[1] || "Unknown Artist";
 
-    return {
+    const songData = {
       id: `backend-${Date.now()}`,
       title: title,
       artist: artist,
       bpm: undefined,
       key: undefined,
     };
+    console.log("Created song object:", songData);
+    return songData;
   } catch (error) {
     console.error("Error searching/downloading song:", error);
+    if (
+      error instanceof TypeError &&
+      error.message.includes("Failed to fetch")
+    ) {
+      console.error(
+        "Backend server is not running. Please start the server at http://localhost:8000"
+      );
+    }
     return null;
   }
 };
@@ -58,6 +75,7 @@ const searchAndDownloadSong = async (query: string): Promise<Song | null> => {
 export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -70,12 +88,26 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
   const handleSearch = async () => {
     if (query.trim() && !isLoading) {
       setIsLoading(true);
-      const song = await searchAndDownloadSong(query);
-      setIsLoading(false);
-
-      if (song) {
-        onSongSelect(song);
+      setError(null);
+      try {
+        const song = await searchAndDownloadSong(query);
+        if (song) {
+          console.log("Selecting song:", song);
+          onSongSelect(song);
+        } else {
+          setError("Failed to find song. Please try again.");
+        }
+      } catch (error) {
+        if (
+          error instanceof TypeError &&
+          error.message.includes("Failed to fetch")
+        ) {
+          setError("Backend server is not running. Please start the server.");
+        } else {
+          setError("An error occurred while searching for the song.");
+        }
       }
+      setIsLoading(false);
     }
   };
 
@@ -99,8 +131,16 @@ export const SearchBar = ({ onSongSelect, className }: SearchBarProps) => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className="pl-12 pr-16 py-6 text-lg bg-card border-border focus:border-primary focus:ring-primary focus:shadow-glow-primary transition-all duration-300"
+          className={cn(
+            "pl-12 pr-16 py-6 text-lg bg-card border-border focus:border-primary focus:ring-primary focus:shadow-glow-primary transition-all duration-300",
+            error ? "border-red-500" : ""
+          )}
         />
+        {error && (
+          <div className="absolute -bottom-8 left-0 text-sm text-red-500">
+            {error}
+          </div>
+        )}
         <Button
           size="sm"
           disabled={isLoading || !query.trim()}

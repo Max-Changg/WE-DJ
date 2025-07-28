@@ -1,9 +1,12 @@
 from pydub import AudioSegment
 import os
 
-stems_dir = os.getcwd() + "/backend/database/stems/"
-sfx_dir = os.getcwd() + "/backend/database/sfx/"
-output_dir = os.getcwd() + "/backend/database/transitions/"
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.abspath(os.path.join(cur_dir, ".."))
+
+stems_dir = os.path.join(root_dir, "database", "stems/")
+sfx_dir = os.path.join(root_dir, "database", "sfx/")
+output_dir = os.path.join(root_dir, "database", "transitions/")
 
 def load_stems(name):
     vocals = AudioSegment.from_file(stems_dir + name + "/vocals.wav")

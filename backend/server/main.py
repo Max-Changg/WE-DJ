@@ -16,7 +16,8 @@ sys.path.append(parent_dir)
 
 from search.search import find_and_download_song
 from splitting_and_trimming.trim_and_split import split_and_trim
-from recommendation.simple_module_call import get_best_transition_simple
+from recommendation.combined_recommendation import get_best_transition
+from transition_generator.transition_generator import crossfade_transition, scratch_transition
 
 app = FastAPI()
 load_dotenv()
@@ -29,10 +30,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def transition_song(song_name: str):
-    print(get_best_transition_simple(song_name))
-
 @app.get('/api/search_song')
 def search_song(query: str):
-    song_name = find_and_download_song(query)
-    get_best_transition_simple(song_name)
+    song_name = find_and_download_song(query)[:-4]
+    song2 = get_best_transition(song_name)[:-4]
+    split_and_trim(song_name)
+    split_and_trim(song2)
+    crossfade_transition(song_name, song2)
+    scratch_transition(song_name, song2)

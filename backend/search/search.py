@@ -107,3 +107,5 @@ def find_and_download_song(query):
 
     if temp_dir:
         temp_dir.cleanup()
+
+    return os.path.basename(local_path)

@@ -29,4 +29,5 @@ app.add_middleware(
 
 @app.get('/api/search_song')
 def search_song(query: str):
-    find_and_download_song(query)
+    song_name = find_and_download_song(query)
+    return song_name

@@ -13,17 +13,25 @@ interface Song {
 }
 
 const Index = () => {
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [selectedSong, setSelectedSong] = useState<string | null>(null);
+  const [transitionURL, setTransitionURL] = useState<string | null>(null);
 
-  const handleSongSelect = (song: Song) => {
+  const handleSongSelect = (song: string) => {
     console.log("Song selected:", song);
     setSelectedSong(song);
+  };
+
+  const handleSetTransitionURL = (url: string) => {
+    setTransitionURL(url);
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Always show the hero section */}
-      <HeroSection onSongSelect={handleSongSelect} />
+      <HeroSection
+        onSongSelect={handleSongSelect}
+        setTransitionURL={handleSetTransitionURL}
+      />
 
       {/* Show selected song and transition results when a song is selected */}
       {selectedSong && (
@@ -31,9 +39,6 @@ const Index = () => {
           <div className="max-w-7xl mx-auto">
             <div className="text-2xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
               {/* Left side - Selected Song */}
-              <div className="flex flex-col items-start">
-                <SelectedSong song={selectedSong} />
-              </div>
 
               {/* Center Arrow */}
               <div className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
@@ -44,7 +49,10 @@ const Index = () => {
 
               {/* Right side - Transition Results */}
               <div className="flex flex-col items-start">
-                <TransitionResults sourceSong={selectedSong} />
+                <audio controls>
+                  <source src={transitionURL} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
               </div>
             </div>
           </div>

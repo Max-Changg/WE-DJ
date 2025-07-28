@@ -93,14 +93,6 @@ def find_and_download_song(query):
     print(f"Downloading: {chosen['title']}")
     filepath, temp_dir = download_song(chosen['url'])
 
-    print("Uploading to Supabase...")
-    public_url = upload_to_supabase(filepath)
-
-    if public_url:
-        print(f"Uploaded successfully! Public URL: {public_url}")
-    else:
-        print("Upload failed.")
-
     print("Saving MP3 to local database folder...")
     local_path = save_to_database_folder(filepath)
     print(f"Saved to: {local_path}")

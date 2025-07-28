@@ -30,4 +30,4 @@ def split_and_trim(song_name):
     process_single(cur_dir + "/backend/database/choruses/" + song_name + "_chorus.mp3", cur_dir + "/backend/database/stems/")
 
 if __name__ == '__main__':
-    split_and_trim_all()
+    split_and_trim('gangnam')

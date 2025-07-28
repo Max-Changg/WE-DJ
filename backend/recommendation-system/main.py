@@ -49,6 +49,7 @@ def main():
     for line in lines:
         if line.startswith('Best song: '):
             song_title = line.replace('Best song: ', '').strip()
+            print(song_title)  # Print the result to stdout
             return song_title
 
 if __name__ == "__main__":

@@ -1,30 +1,30 @@
 import ast
 import sys
 
-def parse_song_titles(output_text):
-    """Parse the song titles array from the output of similar.py"""
+def parse_file_names(output_text):
+    """Parse the file names array from the output of similar.py"""
     try:
-        # Look for a line that contains a list of song titles
+        # Look for a line that contains a list of file names
         lines = output_text.strip().split('\n')
         for line in lines:
             line = line.strip()
             # Look for any line that starts with [ and ends with ]
             if line.startswith('[') and line.endswith(']'):
                 # Parse the Python list
-                song_titles = ast.literal_eval(line)
-                return song_titles
+                file_names = ast.literal_eval(line)
+                return file_names
         return None
     except Exception as e:
-        print(f"Error parsing song titles: {e}")
+        print(f"Error parsing file names: {e}")
         return None
 
-def find_best_song(song_titles):
-    """Find the best song from the top 10"""
-    if not song_titles:
+def find_best_song(file_names):
+    """Find the best song file from the top 10"""
+    if not file_names:
         return None
     
-    # The first song in the array is already the best from similar.py
-    return song_titles[0]
+    # The first file in the array is already the best from similar.py
+    return file_names[0]
 
 def main():
     # Read input from stdin (piped from similar.py)
@@ -36,15 +36,15 @@ def main():
         print("Paste the output from similar.py:")
         output_text = input()
     
-    # Parse the song titles
-    song_titles = parse_song_titles(output_text)
+    # Parse the file names
+    file_names = parse_file_names(output_text)
     
-    if song_titles:
-        # Find the best song
-        best_song_title = find_best_song(song_titles)
-        print(f"Best song: {best_song_title}")
+    if file_names:
+        # Find the best song file
+        best_song_file = find_best_song(file_names)
+        print(f"Best song: {best_song_file}")
     else:
-        print("No song titles found")
+        print("No file names found")
         print("Debug: Here's what I received:")
         print(repr(output_text))
 

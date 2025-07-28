@@ -235,6 +235,6 @@ if __name__ == "__main__":
     
     print(f"\nBest DJ transitions for '{extract_song_title(os.path.basename(user_file)).title()}' ({user_camelot}, {user_bpm:.0f} BPM):")
     
-    # Create array of song titles
-    song_titles = [song['title'].title() for song in similar]
-    print(song_titles)
+    # Create array of file names
+    file_names = [song['file'] for song in similar]
+    print(file_names)

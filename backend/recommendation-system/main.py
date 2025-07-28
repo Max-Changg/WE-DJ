@@ -1,13 +1,15 @@
 import subprocess
 import sys
 
-def run_similar_py():
-    """Run similar.py and capture its output"""
+def run_similar_py(song_title):
+    """Run similar.py with a song title and capture its output"""
     try:
-        result = subprocess.run([sys.executable, 'similar.py'], 
+        result = subprocess.run([sys.executable, 'similar.py', song_title], 
                               capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
+        print(f"Error running similar.py: {e}")
+        print(f"stderr: {e.stderr}")
         return None
 
 def run_best_song_py(similar_output):
@@ -18,11 +20,22 @@ def run_best_song_py(similar_output):
                               capture_output=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
+        print(f"Error running best_song.py: {e}")
+        print(f"stderr: {e.stderr}")
         return None
 
 def main():
-    # Run similar.py
-    similar_output = run_similar_py()
+    # Check if song title is provided as command line argument
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <song_title>")
+        print("Example: python main.py 'Gangnam Style'")
+        return
+    
+    song_title = sys.argv[1]
+    print(f"Finding best transition for: {song_title}")
+    
+    # Run similar.py with the song title
+    similar_output = run_similar_py(song_title)
     if not similar_output:
         return
     
@@ -36,8 +49,7 @@ def main():
     for line in lines:
         if line.startswith('Best song: '):
             song_title = line.replace('Best song: ', '').strip()
-            print(song_title)
-            break
+            return song_title
 
 if __name__ == "__main__":
     main() 

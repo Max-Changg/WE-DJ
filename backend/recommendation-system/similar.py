@@ -1,10 +1,11 @@
 import os
 import json
 import numpy as np
+import sys
 
 CACHE_FILE = 'analysis_cache.json'
-cur_dir = is.getcwd() + '/backend/database/'
-SONG_COLLECTION_FOLDER = cur_dir  # Set your folder name here
+cur_dir = os.getcwd()
+SONG_COLLECTION_FOLDER = os.path.join(cur_dir, '..', 'database')  # Set your folder name here
 
 # Camelot mapping for (key, scale)
 CAMELOT_MAP = {
@@ -178,15 +179,43 @@ def get_transition_reason(target_camelot, song_camelot, target_bpm, song_bpm):
     else:
         return f"Poor harmonic ({bpm_text})"
 
+def find_song_by_title(song_title, folder):
+    """Find a song file by title in the given folder"""
+    song_title_lower = song_title.lower()
+    
+    for fname in os.listdir(folder):
+        if fname.endswith('.mp3') or fname.endswith('.wav'):
+            # Extract title from filename
+            file_title = extract_song_title(fname)
+            
+            # Check if the song title matches (case insensitive)
+            if song_title_lower in file_title or file_title in song_title_lower:
+                return os.path.join(folder, fname)
+    
+    return None
+
 if __name__ == "__main__":
-    # Auto-select the first .mp3 file in the current directory
-    mp3s = [f for f in os.listdir('.') if f.lower().endswith('.mp3')]
-    if mp3s:
-        user_file = mp3s[0]
-        print(f"Auto-selected: {user_file}")
-    else:
-        print("No .mp3 file found in the current directory.")
+    # Check if song title is provided as command line argument
+    if len(sys.argv) < 2:
+        print("Usage: python similar.py <song_title>")
+        print("Example: python similar.py 'Gangnam Style'")
         exit(1)
+    
+    song_title = sys.argv[1]
+    print(f"Searching for song: {song_title}")
+    
+    # Find the song in the database folder
+    user_file = find_song_by_title(song_title, SONG_COLLECTION_FOLDER)
+    
+    if not user_file:
+        print(f"Song '{song_title}' not found in the database folder.")
+        print("Available songs:")
+        for fname in os.listdir(SONG_COLLECTION_FOLDER):
+            if fname.endswith('.mp3') or fname.endswith('.wav'):
+                print(f"  - {extract_song_title(fname).title()}")
+        exit(1)
+    
+    print(f"Found song: {os.path.basename(user_file)}")
     
     cache = load_cache()
     user_path = os.path.abspath(user_file)
@@ -204,7 +233,7 @@ if __name__ == "__main__":
     print("Finding best DJ transitions...")
     similar = compare_songs(user_bpm, user_key, user_scale, song_db, exclude_file=user_file)
     
-    print(f"\nBest DJ transitions for '{extract_song_title(user_file).title()}' ({user_camelot}, {user_bpm:.0f} BPM):")
+    print(f"\nBest DJ transitions for '{extract_song_title(os.path.basename(user_file)).title()}' ({user_camelot}, {user_bpm:.0f} BPM):")
     
     # Create array of song titles
     song_titles = [song['title'].title() for song in similar]

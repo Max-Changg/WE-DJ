@@ -1,10 +1,10 @@
 import subprocess
 import sys
 
-def run_similar_py(song_title):
-    """Run similar.py with a song title and capture its output"""
+def run_similar_py(filename):
+    """Run similar.py with a filename and capture its output"""
     try:
-        result = subprocess.run([sys.executable, 'similar.py', song_title], 
+        result = subprocess.run([sys.executable, 'similar.py', filename], 
                               capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
@@ -25,17 +25,18 @@ def run_best_song_py(similar_output):
         return None
 
 def main():
-    # Check if song title is provided as command line argument
+    # Check if filename is provided as command line argument
     if len(sys.argv) < 2:
-        print("Usage: python main.py <song_title>")
-        print("Example: python main.py 'Gangnam Style'")
+        print("Usage: python main.py <filename>")
+        print("Example: python main.py 'gangnam.mp3'")
+        print("Example: python main.py 'gangnam'")
         return
     
-    song_title = sys.argv[1]
-    print(f"Finding best transition for: {song_title}")
+    filename = sys.argv[1]
+    print(f"Finding best transition for: {filename}")
     
-    # Run similar.py with the song title
-    similar_output = run_similar_py(song_title)
+    # Run similar.py with the filename
+    similar_output = run_similar_py(filename)
     if not similar_output:
         return
     

@@ -179,43 +179,47 @@ def get_transition_reason(target_camelot, song_camelot, target_bpm, song_bpm):
     else:
         return f"Poor harmonic ({bpm_text})"
 
-def find_song_by_title(song_title, folder):
-    """Find a song file by title in the given folder"""
-    song_title_lower = song_title.lower()
+def find_song_by_filename(filename, folder):
+    """Find a song file by exact filename in the given folder"""
+    # Check if the filename already has an extension
+    if not filename.endswith(('.mp3', '.wav')):
+        # Try with common extensions
+        for ext in ['.mp3', '.wav']:
+            full_filename = filename + ext
+            file_path = os.path.join(folder, full_filename)
+            if os.path.exists(file_path):
+                return file_path
     
-    for fname in os.listdir(folder):
-        if fname.endswith('.mp3') or fname.endswith('.wav'):
-            # Extract title from filename
-            file_title = extract_song_title(fname)
-            
-            # Check if the song title matches (case insensitive)
-            if song_title_lower in file_title or file_title in song_title_lower:
-                return os.path.join(folder, fname)
+    # Try the exact filename as provided
+    file_path = os.path.join(folder, filename)
+    if os.path.exists(file_path):
+        return file_path
     
     return None
 
 if __name__ == "__main__":
-    # Check if song title is provided as command line argument
+    # Check if filename is provided as command line argument
     if len(sys.argv) < 2:
-        print("Usage: python similar.py <song_title>")
-        print("Example: python similar.py 'Gangnam Style'")
+        print("Usage: python similar.py <filename>")
+        print("Example: python similar.py 'gangnam.mp3'")
+        print("Example: python similar.py 'gangnam'")
         exit(1)
     
-    song_title = sys.argv[1]
-    print(f"Searching for song: {song_title}")
+    filename = sys.argv[1]
+    print(f"Searching for file: {filename}")
     
     # Find the song in the database folder
-    user_file = find_song_by_title(song_title, SONG_COLLECTION_FOLDER)
+    user_file = find_song_by_filename(filename, SONG_COLLECTION_FOLDER)
     
     if not user_file:
-        print(f"Song '{song_title}' not found in the database folder.")
-        print("Available songs:")
+        print(f"File '{filename}' not found in the database folder.")
+        print("Available files:")
         for fname in os.listdir(SONG_COLLECTION_FOLDER):
             if fname.endswith('.mp3') or fname.endswith('.wav'):
-                print(f"  - {extract_song_title(fname).title()}")
+                print(f"  - {fname}")
         exit(1)
     
-    print(f"Found song: {os.path.basename(user_file)}")
+    print(f"Found file: {os.path.basename(user_file)}")
     
     cache = load_cache()
     user_path = os.path.abspath(user_file)
@@ -233,7 +237,7 @@ if __name__ == "__main__":
     print("Finding best DJ transitions...")
     similar = compare_songs(user_bpm, user_key, user_scale, song_db, exclude_file=user_file)
     
-    print(f"\nBest DJ transitions for '{extract_song_title(os.path.basename(user_file)).title()}' ({user_camelot}, {user_bpm:.0f} BPM):")
+    print(f"\nBest DJ transitions for '{os.path.basename(user_file)}' ({user_camelot}, {user_bpm:.0f} BPM):")
     
     # Create array of file names
     file_names = [song['file'] for song in similar]

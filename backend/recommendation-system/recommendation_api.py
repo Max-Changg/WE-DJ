@@ -2,12 +2,12 @@ import subprocess
 import sys
 import os
 
-def get_best_transition(song_title):
+def get_best_transition(filename):
     """
-    Get the best DJ transition for a given song title.
+    Get the best DJ transition for a given filename.
     
     Args:
-        song_title (str): The title of the song to find transitions for
+        filename (str): The filename to find transitions for (e.g., 'gangnam.mp3' or 'gangnam')
         
     Returns:
         str: The filename of the best transition song, or None if an error occurs
@@ -16,9 +16,9 @@ def get_best_transition(song_title):
         # Get the directory where this script is located
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
-        # Run main.py with the song title as argument
+        # Run main.py with the filename as argument
         result = subprocess.run(
-            [sys.executable, os.path.join(script_dir, 'main.py'), song_title],
+            [sys.executable, os.path.join(script_dir, 'main.py'), filename],
             capture_output=True,
             text=True,
             check=True,
@@ -43,12 +43,12 @@ def get_best_transition(song_title):
         print(f"Unexpected error: {e}")
         return None
 
-def get_transition_with_details(song_title):
+def get_transition_with_details(filename):
     """
     Get the best DJ transition with additional details about the process.
     
     Args:
-        song_title (str): The title of the song to find transitions for
+        filename (str): The filename to find transitions for (e.g., 'gangnam.mp3' or 'gangnam')
         
     Returns:
         dict: Dictionary containing the best transition filename and process details
@@ -57,7 +57,7 @@ def get_transition_with_details(song_title):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
         result = subprocess.run(
-            [sys.executable, os.path.join(script_dir, 'main.py'), song_title],
+            [sys.executable, os.path.join(script_dir, 'main.py'), filename],
             capture_output=True,
             text=True,
             check=True,
@@ -75,7 +75,7 @@ def get_transition_with_details(song_title):
         
         return {
             'success': True,
-            'input_song': song_title,
+            'input_file': filename,
             'best_transition_file': best_transition,
             'full_output': result.stdout,
             'error': None
@@ -84,7 +84,7 @@ def get_transition_with_details(song_title):
     except subprocess.CalledProcessError as e:
         return {
             'success': False,
-            'input_song': song_title,
+            'input_file': filename,
             'best_transition_file': None,
             'full_output': e.stdout if e.stdout else '',
             'error': e.stderr if e.stderr else str(e)
@@ -92,7 +92,7 @@ def get_transition_with_details(song_title):
     except Exception as e:
         return {
             'success': False,
-            'input_song': song_title,
+            'input_file': filename,
             'best_transition_file': None,
             'full_output': '',
             'error': str(e)
@@ -101,14 +101,14 @@ def get_transition_with_details(song_title):
 # Example usage and testing
 if __name__ == "__main__":
     # Test the function
-    test_songs = ["gangnam", "Any Song", "MC Hammer"]
+    test_files = ["gangnam.mp3", "gangnam", "mc_hammer.mp3"]
     
     print("Testing recommendation API:")
     print("=" * 40)
     
-    for song in test_songs:
-        print(f"\nInput: {song}")
-        result = get_best_transition(song)
+    for filename in test_files:
+        print(f"\nInput: {filename}")
+        result = get_best_transition(filename)
         if result:
             print(f"Best transition: {result}")
         else:
@@ -117,9 +117,9 @@ if __name__ == "__main__":
     print("\n" + "=" * 40)
     print("Testing with details:")
     
-    for song in test_songs:
-        print(f"\nInput: {song}")
-        result = get_transition_with_details(song)
+    for filename in test_files:
+        print(f"\nInput: {filename}")
+        result = get_transition_with_details(filename)
         if result['success']:
             print(f"Best transition file: {result['best_transition_file']}")
         else:

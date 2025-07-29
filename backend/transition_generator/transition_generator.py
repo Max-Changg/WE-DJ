@@ -1,5 +1,6 @@
 from pydub import AudioSegment
 import os
+from bpm_matcher import match
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.abspath(os.path.join(cur_dir, ".."))
@@ -7,6 +8,7 @@ root_dir = os.path.abspath(os.path.join(cur_dir, ".."))
 stems_dir = os.path.join(root_dir, "database", "stems/")
 sfx_dir = os.path.join(root_dir, "database", "sfx/")
 output_dir = os.path.join(root_dir, "database", "transitions/")
+choruses_dir = os.path.join(root_dir, "database", "choruses/")
 
 def load_stems(name):
     vocals = AudioSegment.from_file(stems_dir + name + "/vocals.wav")
@@ -113,7 +115,6 @@ def crazy_scratch_transition(song1_file, song2_file):
     final_transition.export(output_dir + "crazy_scratch_dj_transition.mp3", format="mp3")
     print("DJ Transition created!")
 
-
 def steve_transition(song1_file, song2_file):
     song1 = song1_file + "_chorus"
     song2 = song2_file + "_chorus"
@@ -122,14 +123,15 @@ def steve_transition(song1_file, song2_file):
     instrumental_a = build_instrumental(bass_a, drums_a, other_a)
     instrumental_b = build_instrumental(bass_b, drums_b, other_b)
     song_a = instrumental_a.overlay(vocals_a)
-    song_b = instrumental_b.overlay(vocals_b)
-    scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")[:250]
-    silence = AudioSegment.silent(duration=100)
+    bpm1, bpm2 = match(stems_dir + song1 + "/vocals.wav", choruses_dir + song2 + ".mp3")
+    scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")[:60000 / (bpm1*2)]
+    vocals_a_matched = AudioSegment.from_file(stems_dir + song1 +"/vocals_matched.wav")
+    silence = AudioSegment.silent(duration=60000 / (bpm2 * 2))
 
     instrument_fade = 8500
     scratch_sound = 15000
     instrument_new = 15500
-    full_new = 20000
+    full_new = 22000
 
     # Full song A
     full_a = song_a[:instrument_fade]
@@ -145,13 +147,14 @@ def steve_transition(song1_file, song2_file):
 
     # Song B fading in
     b_fade = instrumental_b[:full_new - instrument_new]
-    b_fade = b_fade.overlay(vocals_a[instrument_new:full_new].fade_out(3000))
-    b_fade = b_fade.overlay(vocals_b[:full_new - instrument_new].fade_in(8000))
+    b_fade = b_fade.overlay(vocals_a_matched[instrument_new * (bpm2 / bpm1):full_new * (bpm2 / bpm1)].fade_out(full_new-instrument_new))
+    #b_fade = b_fade.overlay(vocals_b[:full_new - instrument_new].fade_in(10000))
 
     # Full song B
-    full_b = song_b[full_new - instrument_new:]
+    b_instrumental = instrumental_b[full_new - instrument_new:]
+    full_b = b_instrumental.overlay(vocals_b[full_new - instrument_new:].fade_in(3000))
 
-    final_transition = full_a + a_instrument_fade + scratch_loop + b_fade + full_b
+    final_transition = full_a + a_instrument_fade + scratch_loop + silence + b_fade + full_b
 
     final_transition.export(output_dir + "steve_transition.mp3", format="mp3")
     print("DJ Transition created!")

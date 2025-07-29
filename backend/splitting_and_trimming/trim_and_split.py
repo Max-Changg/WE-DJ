@@ -43,4 +43,5 @@ def split_and_trim(song_name):
     process_single(chorus_path, stems_dir)
 
 if __name__ == '__main__':
-    split_and_trim('gangnam')
+    split_and_trim('i_like_it')
+    split_and_trim('thats_what_i_like')

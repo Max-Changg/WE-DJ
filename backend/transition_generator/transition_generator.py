@@ -126,35 +126,36 @@ def steve_transition(song1_file, song2_file):
     scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")[:250]
     silence = AudioSegment.silent(duration=100)
 
-    instrument_fade = 10000
-    scratch_sound = 16500
-    instrument_new = 17000
+    instrument_fade = 8500
+    scratch_sound = 15000
+    instrument_new = 15500
     full_new = 20000
 
     # Full song A
     full_a = song_a[:instrument_fade]
 
     # Instrument of A fading out
-    a_instrument_fade = instrumental_a[instrument_fade:scratch_sound].fade_out(3000)
-    a_instrument_fade = a_instrument_fade.overlay(vocals_a[instrument_fade:scratch_sound])
+    a_instrument_fade = vocals_a[instrument_fade:scratch_sound]
+    a_instrument_fade = a_instrument_fade.overlay(instrumental_a[instrument_fade:scratch_sound].apply_gain(-120))
 
     # Scratching
     scratch_time = vocals_a[scratch_sound:instrument_new]
     scratch_loop = scratch + scratch
     scratch_time = scratch_time.overlay(scratch_loop)
 
-    # Instrument of B fading in
-    b_instrument_fade = instrumental_b[instrument_new:full_new]
-    b_instrument_fade = b_instrument_fade.overlay(vocals_a[instrument_new:full_new].fade_out(3000))
+    # Song B fading in
+    b_fade = instrumental_b[:full_new - instrument_new]
+    b_fade = b_fade.overlay(vocals_a[instrument_new:full_new].fade_out(3000))
+    b_fade = b_fade.overlay(vocals_b[:full_new - instrument_new].fade_in(8000))
 
     # Full song B
-    full_b = song_b[full_new:]
+    full_b = song_b[full_new - instrument_new:]
 
-    final_transition = full_a + a_instrument_fade + scratch_loop + b_instrument_fade + full_b
+    final_transition = full_a + a_instrument_fade + scratch_loop + b_fade + full_b
 
     final_transition.export(output_dir + "steve_transition.mp3", format="mp3")
     print("DJ Transition created!")
 
 
 if __name__ == '__main__':
-    steve_transition("mc_hammer", "vanilla_ice")
+    steve_transition("thats_what_i_like", "i_like_it")

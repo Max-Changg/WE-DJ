@@ -1,6 +1,6 @@
 import os
-from .stem_splitter import batch_process_songs, process_single
-from .trim_to_chorus import extract_chorus
+from stem_splitter import batch_process_songs, process_single
+from trim_to_chorus import extract_chorus
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 backend_dir = os.path.abspath(os.path.join(cur_dir, ".."))
@@ -29,7 +29,7 @@ def split_and_trim_all():
     batch_process_songs(song_chorus_names, stems_dir)
     print("Separation complete!")
 
-def split_and_trim(song_name):
+def split_and_trim(song_name, duration=30):
     print("cur_dir:", cur_dir)
     print("backend_dir:", backend_dir)
     print("database_dir:", database_dir)
@@ -37,11 +37,10 @@ def split_and_trim(song_name):
     chorus_path = os.path.join(chorus_dir, f"{song_name}_chorus.mp3")
 
     print(f"Extracting song {song_name}!")
-    extract_chorus(input_path, chorus_path, duration=30)
+    extract_chorus(input_path, chorus_path, duration)
 
     print(f"Splitting song {song_name}!")
     process_single(chorus_path, stems_dir)
 
 if __name__ == '__main__':
-    split_and_trim('i_like_it')
-    split_and_trim('thats_what_i_like')
+    split_and_trim('thats_what_i_like', duration = 30)

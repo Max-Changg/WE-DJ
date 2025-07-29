@@ -15,8 +15,10 @@ interface Song {
 interface SearchBarProps {
   onSongSelect: (song: string) => void;
   className?: string;
-  setTransitionURL: (url: string) => void;
+  setTransitionURL: (url: string | null) => void;
 }
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Function to search and download song using the backend API
 const searchAndDownloadSong = async (query: string): Promise<string | null> => {
@@ -24,7 +26,7 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/api/search_song?query=${query}+official+audio`,
+      `https://we-dj-backend-production.up.railway.app/api/search_song?query=${query}+official+audio`,
       {
         method: "GET",
       }
@@ -71,6 +73,7 @@ export const SearchBar = ({
   };
 
   const handleSearch = async () => {
+    setTransitionURL(null);
     if (query.trim() && !isLoading) {
       setIsLoading(true);
       setError(null);

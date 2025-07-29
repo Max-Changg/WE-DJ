@@ -21,7 +21,7 @@ const Index = () => {
     setSelectedSong(song);
   };
 
-  const handleSetTransitionURL = (url: string) => {
+  const handleSetTransitionURL = (url: string | null) => {
     setTransitionURL(url);
   };
 
@@ -49,10 +49,12 @@ const Index = () => {
 
               {/* Right side - Transition Results */}
               <div className="flex flex-col items-start">
-                <audio controls>
-                  <source src={transitionURL} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
+                {transitionURL && (
+                  <audio controls>
+                    <source src={transitionURL} type="audio/mpeg" />
+                    Your browser does not support the audio element.
+                  </audio>
+                )}
               </div>
             </div>
           </div>

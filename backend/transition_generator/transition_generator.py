@@ -68,8 +68,6 @@ def scratch_transition(song1_file, song2_file):
     instrumental_b = build_instrumental(bass_b, drums_b, other_b)
     song_a = instrumental_a.overlay(vocals_a)
     song_b = instrumental_b.overlay(vocals_b)
-    scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")[:250]
-    # silence = AudioSegment.silent(duration=100)
 
     scratch_start = 15000
 
@@ -77,7 +75,6 @@ def scratch_transition(song1_file, song2_file):
     full_a = song_a[:scratch_start]
 
     # Scratching
-    # scratch_segment = scratch + scratch + scratch + scratch
     scratch_loop = AudioSegment.from_file(sfx_dir + "scratch_loop.wav")[:600]
 
     # Full song B
@@ -89,5 +86,66 @@ def scratch_transition(song1_file, song2_file):
     final_transition.export(output_dir + "scratch_dj_transition.mp3", format="mp3")
     print("DJ Transition created!")
 
+def crazy_scratch_transition(song1_file, song2_file):
+    song1 = song1_file + "_chorus"
+    song2 = song2_file + "_chorus"
+    vocals_a, bass_a, drums_a, other_a = load_stems(song1)
+    vocals_b, bass_b, drums_b, other_b = load_stems(song2)
+    instrumental_a = build_instrumental(bass_a, drums_a, other_a)
+    instrumental_b = build_instrumental(bass_b, drums_b, other_b)
+    song_a = instrumental_a.overlay(vocals_a)
+    song_b = instrumental_b.overlay(vocals_b)
+
+    scratch_start = 12500
+
+    # Full song A
+    full_a = song_a[:scratch_start]
+
+    # Scratching
+    scratch_loop = AudioSegment.from_file(sfx_dir + "crazy_scratch_loop.wav")
+
+    # Full song B
+    full_b = song_b
+
+    # Full transition
+    final_transition = full_a + scratch_loop + full_b
+
+    final_transition.export(output_dir + "crazy_scratch_dj_transition.mp3", format="mp3")
+    print("DJ Transition created!")
+
+
+def steve_transition(song1_file, song2_file):
+    song1 = song1_file + "_chorus"
+    song2 = song2_file + "_chorus"
+    vocals_a, bass_a, drums_a, other_a = load_stems(song1)
+    vocals_b, bass_b, drums_b, other_b = load_stems(song2)
+    instrumental_a = build_instrumental(bass_a, drums_a, other_a)
+    instrumental_b = build_instrumental(bass_b, drums_b, other_b)
+    song_a = instrumental_a.overlay(vocals_a)
+    song_b = instrumental_b.overlay(vocals_b)
+    scratch = AudioSegment.from_file(sfx_dir + "scratch.wav")
+    silence = AudioSegment.silent(duration=100)
+
+    instrument_fade = 12000
+    scratch_sound = 15000
+    instrument_new = 16000
+    full_new = 20000
+
+    # Full song A
+    full_a = song_a[:instrument_fade]
+
+    # Scratching
+    scratch_loop = AudioSegment.from_file(sfx_dir + "crazy_scratch_loop.wav")
+
+    # Full song B
+    full_b = song_b
+
+    # Full transition
+    final_transition = full_a + scratch_loop + full_b
+
+    final_transition.export(output_dir + "crazy_scratch_dj_transition.mp3", format="mp3")
+    print("DJ Transition created!")
+
+
 if __name__ == '__main__':
-    crossfade_transition("mc_hammer", "gangnam")
+    scratch_transition("mc_hammer", "vanilla_ice")

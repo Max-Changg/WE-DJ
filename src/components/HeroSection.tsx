@@ -12,7 +12,7 @@ interface Song {
 interface HeroSectionProps {
   onSongSelect: (song: string) => void;
   className?: string;
-  setTransitionURL: (url: string) => void;
+  setTransitionURL: (url: string | null) => void;
 }
 
 export const HeroSection = ({

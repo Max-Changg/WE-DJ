@@ -26,7 +26,7 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
 
   try {
     const response = await fetch(
-      `https://we-dj-backend-production.up.railway.app/api/search_song?query=${query}+official+audio`,
+      `http://76.71.171.219:56134/api/search_song?query=${query}+official+audio`,
       {
         method: "GET",
       }

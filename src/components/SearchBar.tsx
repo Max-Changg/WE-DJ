@@ -18,9 +18,6 @@ interface SearchBarProps {
   setTransitionURL: (url: string | null) => void;
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
-// Function to search and download song using the backend API
 const searchAndDownloadSong = async (query: string): Promise<string | null> => {
   if (!query.trim()) return null;
 

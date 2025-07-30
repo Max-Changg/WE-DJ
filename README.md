@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/7cf7966f-71a7-4e7a-8d64-e9736a1f9cd7
+**Developer URL**: https://lovable.dev/projects/7cf7966f-71a7-4e7a-8d64-e9736a1f9cd7
 
 ## What is WE-DJ?
 

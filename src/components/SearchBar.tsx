@@ -26,7 +26,7 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
 
   try {
     const response = await fetch(
-      `http://76.71.171.219:56134/api/search_song?query=${query}+official+audio`,
+      `https://76.71.171.219:56134/api/search_song?query=${query}+official+audio`,
       {
         method: "GET",
       }
@@ -39,7 +39,6 @@ const searchAndDownloadSong = async (query: string): Promise<string | null> => {
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
-    console.log(blob.size);
     return url;
   } catch (error) {
     console.error("Error searching/downloading song:", error);

@@ -17,7 +17,6 @@ const Index = () => {
   const [transitionURL, setTransitionURL] = useState<string | null>(null);
 
   const handleSongSelect = (song: string) => {
-    console.log("Song selected:", song);
     setSelectedSong(song);
   };
 

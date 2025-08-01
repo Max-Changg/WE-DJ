@@ -3,6 +3,7 @@
 ## Project info
 
 **Developer URL**: https://lovable.dev/projects/7cf7966f-71a7-4e7a-8d64-e9736a1f9cd7
+**Backend is available on another repository**: https://github.com/brandonyen/we-dj-backend
 
 ## What is WE-DJ?
 

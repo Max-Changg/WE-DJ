@@ -1,64 +1,62 @@
 import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
-import { TransitionResults } from "@/components/TransitionResults";
-import { SelectedSong } from "@/components/SelectedSong";
-import { ArrowRight } from "lucide-react";
-
-interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  bpm?: number;
-  key?: string;
-}
+import { AudioPlayer } from "@/components/AudioPlayer";
 
 const Index = () => {
-  const [selectedSong, setSelectedSong] = useState<string | null>(null);
   const [transitionURL, setTransitionURL] = useState<string | null>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [title, setTitle] = useState<string | null>(null);
 
-  const handleSongSelect = (song: string) => {
-    setSelectedSong(song);
-  };
+  const handleSearch = async (query: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/search_song?query=${encodeURIComponent(
+          query
+        )}+official+audio`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "audio/mpeg",
+          },
+        }
+      );
 
-  const handleSetTransitionURL = (url: string | null) => {
-    setTransitionURL(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch audio");
+      }
+
+      const thumbnailUrl = response.headers.get("X-Thumbnail-Url");
+      const songTitle = response.headers.get("X-Song-Title");
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+
+      setThumbnailUrl(thumbnailUrl);
+      setTitle(songTitle);
+      setTransitionURL(url);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Always show the hero section */}
-      <HeroSection
-        onSongSelect={handleSongSelect}
-        setTransitionURL={handleSetTransitionURL}
-      />
+    <div className="min-h-screen bg-background relative">
+      {/* Hero section with search */}
+      <HeroSection onSearch={handleSearch} />
 
-      {/* Show selected song and transition results when a song is selected */}
-      {selectedSong && (
-        <div className="flex-1 px-6 py-8 pb-80 overflow-auto">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-2xl grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
-              {/* Left side - Selected Song */}
-
-              {/* Center Arrow */}
-              <div className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
-                <div className="flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full border border-primary/20">
-                  <ArrowRight className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-
-              {/* Right side - Transition Results */}
-              <div className="flex flex-col items-start">
-                {transitionURL && (
-                  <audio controls>
-                    <source src={transitionURL} type="audio/mpeg" />
-                    Your browser does not support the audio element.
-                  </audio>
-                )}
-              </div>
-            </div>
+      {/* Audio player */}
+      <div className="absolute inset-x-0 bottom-1 px-6 z-50">
+        {transitionURL && (
+          <div className="w-full max-w-2xl mx-auto">
+            <AudioPlayer
+              src={transitionURL}
+              thumbnailUrl={thumbnailUrl}
+              title={title}
+              className="w-full"
+            />
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

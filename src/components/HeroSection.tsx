@@ -1,25 +1,12 @@
 import { SearchBar } from "./SearchBar";
 import { cn } from "@/lib/utils";
 
-interface Song {
-  id: string;
-  title: string;
-  artist: string;
-  bpm?: number;
-  key?: string;
-}
-
 interface HeroSectionProps {
-  onSongSelect: (song: string) => void;
+  onSearch: (query: string) => void;
   className?: string;
-  setTransitionURL: (url: string | null) => void;
 }
 
-export const HeroSection = ({
-  onSongSelect,
-  className,
-  setTransitionURL,
-}: HeroSectionProps) => {
+export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
   return (
     <section
       className={cn(
@@ -80,12 +67,8 @@ export const HeroSection = ({
         </div>
 
         {/* Search bar */}
-        <div className="w-full flex flex-col items-center justify-center mb-8">
-          <SearchBar
-            onSongSelect={onSongSelect}
-            className="w-full max-w-2xl mx-auto"
-            setTransitionURL={setTransitionURL}
-          />
+        <div className="w-full flex flex-col items-center justify-center">
+          <SearchBar onSearch={onSearch} className="w-full max-w-2xl mx-auto" />
           {/* Call to action */}
           <p className="text-muted-foreground mt-4">
             Start typing the name of any song to find perfect transition matches

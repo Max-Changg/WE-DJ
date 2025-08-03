@@ -22,8 +22,8 @@ export const LoadingBar = ({ isComplete }: LoadingBarProps) => {
       return;
     }
 
-    // Total duration for first 3 texts: 15 seconds (5 seconds each)
-    const textDuration = 8000;
+    // Total duration for first 3 texts: 12 seconds (4 seconds each)
+    const textDuration = 4000;
     const totalTexts = loadingTexts.length;
 
     // Update text every 5 seconds for the first 3 texts
@@ -41,13 +41,13 @@ export const LoadingBar = ({ isComplete }: LoadingBarProps) => {
       setProgress((prevProgress) => {
         // If we're in the last text phase, keep progress between 75-95%
         if (currentTextIndex === totalTexts - 1) {
-          return prevProgress < 95 ? prevProgress + 0.3 : prevProgress;
+          return prevProgress < 95 ? prevProgress + 0.8 : prevProgress;
         }
 
-        // Otherwise, progress up to 75% over 24 seconds (8 seconds per phase)
+        // Otherwise, progress up to 75% over 12 seconds (4 seconds per phase)
         const targetProgress = (currentTextIndex + 1) * (75 / (totalTexts - 1));
         return prevProgress < targetProgress
-          ? prevProgress + 0.6
+          ? prevProgress + 1.2
           : prevProgress;
       });
     }, 200);

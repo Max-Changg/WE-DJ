@@ -146,6 +146,7 @@ const Index = () => {
 
       // Process and display song names immediately
       const currentSongName = decodeURIComponent(data["current-song"]).replace(
+
         ".mp3",
         ""
       );

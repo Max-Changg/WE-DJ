@@ -1,8 +1,8 @@
-import { SearchBar } from "./SearchBar";
+import { SearchBar, TransitionType } from "./SearchBar";
 import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
-  onSearch: (query: string) => void;
+  onSearch: (query: string, transitionType: TransitionType) => void;
   className?: string;
 }
 

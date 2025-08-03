@@ -10,7 +10,7 @@ export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
   return (
     <section
       className={cn(
-        "min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden",
+        "min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden mt-32",
         className
       )}
     >
@@ -18,7 +18,7 @@ export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
       <div className="absolute inset-0 bg-background" />
 
       {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-90">
+      <div className="absolute inset-0 opacity-70">
         <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/30 rounded-full blur-3xl animate-pulse" />
         <div className="absolute top-3/4 right-1/4 w-48 h-28 bg-accent/20 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute bottom-1/4 left-1/3 w-24 h-24 bg-primary/40 rounded-full blur-2xl animate-pulse delay-500" />

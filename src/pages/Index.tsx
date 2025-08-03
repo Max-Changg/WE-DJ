@@ -19,12 +19,13 @@ const Index = () => {
 
       // First get the UUID
       const searchResponse = await fetch(
-        // `http://localhost:8000/api/search_song?query=${encodeURIComponent(
-        //   query
-        // )}+official+audio`,
-        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
+        // For production:
+        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
         {
           method: "GET",
         }
@@ -39,13 +40,11 @@ const Index = () => {
 
       // Then get the actual audio file
       const audioResponse = await fetch(
-        // `http://localhost:8000/api/get_song?uuid=${data.folder}`,
-        `https://we-dj-proxy-production.up.railway.app/api/get_song?uuid=${data.folder}`,
+        `http://127.0.0.1:8000/api/get_song?song_uuid=${data.folder}`,
+        // For production:
+        // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${data.folder}`,
         {
           method: "GET",
-          headers: {
-            Accept: "audio/mpeg",
-          },
         }
       );
 
@@ -53,21 +52,17 @@ const Index = () => {
         throw new Error("Failed to fetch audio");
       }
 
-      console.log("Got audio response");
-      const thumbnailUrl = audioResponse.headers.get("X-Thumbnail-Url");
-      const songTitle = audioResponse.headers.get("X-Song-Title");
-      console.log("Headers:", { thumbnailUrl, songTitle });
-
       const blob = await audioResponse.blob();
-      console.log("Got blob, size:", blob.size);
+      console.log("Got audio blob, size:", blob.size);
       const url = URL.createObjectURL(blob);
 
-      // Use the decoded song names if no headers
-      const title =
-        songTitle ||
-        decodeURIComponent(data["current-song"]).replace(".mp3", "");
+      // Use the song name from the JSON response
+      const title = decodeURIComponent(data["current-song"]).replace(
+        ".mp3",
+        ""
+      );
 
-      setThumbnailUrl(thumbnailUrl);
+      setThumbnailUrl(null); // No thumbnail in current backend response
       setTitle(title);
       setTransitionURL(url);
     } catch (error) {

@@ -10,12 +10,12 @@ const Index = () => {
   const handleSearch = async (query: string) => {
     try {
       const response = await fetch(
-        // `http://localhost:8000/api/search_song?query=${encodeURIComponent(
         `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
         {
           method: "GET",
+          mode: "no-cors", // Add this line
         }
       );
 

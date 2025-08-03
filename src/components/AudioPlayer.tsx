@@ -37,14 +37,28 @@ export const AudioPlayer = ({
     }
   }, [volume]);
 
-  const togglePlay = () => {
+  useEffect(() => {
+    // Reset audio element when src changes
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
+      audioRef.current.load();
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+  }, [src]);
+
+  const togglePlay = async () => {
+    if (audioRef.current) {
+      try {
+        if (isPlaying) {
+          await audioRef.current.pause();
+        } else {
+          await audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+      } catch (error) {
+        console.error("Playback error:", error);
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -189,11 +203,13 @@ export const AudioPlayer = ({
       {/* Hidden Audio Element */}
       <audio
         ref={audioRef}
-        src={src}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => setIsPlaying(false)}
-      />
+      >
+        <source src={src} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };

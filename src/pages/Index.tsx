@@ -2,6 +2,12 @@ import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { AudioPlayer } from "@/components/AudioPlayer";
 
+interface SearchResponse {
+  folder: string;
+  "current-song": string;
+  "transition-song": string;
+}
+
 const Index = () => {
   const [transitionURL, setTransitionURL] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -9,31 +15,63 @@ const Index = () => {
 
   const handleSearch = async (query: string) => {
     try {
-      const response = await fetch(
-        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+      console.log("Starting search for:", query);
+
+      // First get the UUID
+      const searchResponse = await fetch(
+        `http://localhost:8000/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
+        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
         {
           method: "GET",
-          mode: "no-cors", // Add this line
         }
       );
 
-      if (!response.ok) {
+      if (!searchResponse.ok) {
+        throw new Error("Failed to get song UUID");
+      }
+
+      const data = (await searchResponse.json()) as SearchResponse;
+      console.log("Got UUID:", data.folder);
+
+      // Then get the actual audio file
+      const audioResponse = await fetch(
+        `http://localhost:8000/api/get_song?song_uuid=${data.folder}`,
+        // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${data.folder}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "audio/mpeg",
+          },
+        }
+      );
+
+      if (!audioResponse.ok) {
         throw new Error("Failed to fetch audio");
       }
 
-      const thumbnailUrl = response.headers.get("X-Thumbnail-Url");
-      const songTitle = response.headers.get("X-Song-Title");
+      console.log("Got audio response");
+      const thumbnailUrl = audioResponse.headers.get("X-Thumbnail-Url");
+      const songTitle = audioResponse.headers.get("X-Song-Title");
+      console.log("Headers:", { thumbnailUrl, songTitle });
 
-      const blob = await response.blob();
+      const blob = await audioResponse.blob();
+      console.log("Got blob, size:", blob.size);
       const url = URL.createObjectURL(blob);
 
+      // Use the decoded song names if no headers
+      const title =
+        songTitle ||
+        decodeURIComponent(data["current-song"]).replace(".mp3", "");
+
       setThumbnailUrl(thumbnailUrl);
-      setTitle(songTitle);
+      setTitle(title);
       setTransitionURL(url);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Search error:", error);
     }
   };
 

@@ -10,7 +10,7 @@ export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
   return (
     <section
       className={cn(
-        "min-h-[100vh] flex flex-col items-center justify-center relative overflow-hidden",
+        "min-h-[80vh] flex flex-col items-center justify-center relative overflow-hidden",
         className
       )}
     >
@@ -70,7 +70,6 @@ export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
         <div className="w-full flex flex-col items-center justify-center">
           <SearchBar onSearch={onSearch} className="w-full max-w-2xl mx-auto" />
           {/* Call to action */}
-
         </div>
       </div>
     </section>

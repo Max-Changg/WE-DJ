@@ -35,17 +35,17 @@ const Index = () => {
         const [currentThumbResponse, transitionThumbResponse] =
           await Promise.all([
             fetch(
-              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               // For production:
-              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               {
                 method: "GET",
               }
             ),
             fetch(
-              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               // For production:
-              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               {
                 method: "GET",
               }
@@ -88,9 +88,9 @@ const Index = () => {
     const checkTransition = async () => {
       try {
         const response = await fetch(
-          // `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
+          `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
           // For production:
-          `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`,
+          // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`,
           {
             method: "GET",
           }
@@ -129,13 +129,13 @@ const Index = () => {
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
-        // `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
-        //   query
-        // )}+official+audio`,
-        // For production:
-        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
+        // For production:
+        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
         {
           method: "GET",
         }
@@ -150,7 +150,6 @@ const Index = () => {
 
       // Process and display song names immediately
       const currentSongName = decodeURIComponent(data["current-song"]).replace(
-
         ".mp3",
         ""
       );
@@ -179,38 +178,46 @@ const Index = () => {
       {/* Hero section with search */}
       <HeroSection onSearch={handleSearch} />
 
-      {/* Loading Bar */}
-      {isLoading && (
-        <div className="absolute top-[85vh] left-0 right-0 px-6">
-          <div className="w-full max-w-2xl mx-auto">
-            <LoadingBar isComplete={!!transitionURL} />
+      <div className="flex flex-col gap-12">
+        {/* Loading Bar */}
+        {isLoading && (
+          <div className="px-6">
+            <div className="w-full max-w-2xl mx-auto">
+              <LoadingBar isComplete={!!transitionURL} />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Transition Display */}
-      {transitionData && (
-        <div className="relative inset-x-0 top-1/2 transform -translate-y-1/2 px-6">
-          <div className="w-full max-w-2xl mx-auto">
-            <TransitionDisplay
-              currentSong={decodeURIComponent(transitionData.currentSong)}
-              transitionSong={decodeURIComponent(transitionData.transitionSong)}
-              currentThumbnail={currentThumbnail || undefined}
-              transitionThumbnail={transitionThumbnail || undefined}
-              className="w-full"
-            />
+        {/* Transition Display */}
+        {transitionData && (
+          <div className="px-6">
+            <div className="w-full max-w-2xl mx-auto">
+              <TransitionDisplay
+                currentSong={decodeURIComponent(transitionData.currentSong)}
+                transitionSong={decodeURIComponent(
+                  transitionData.transitionSong
+                )}
+                currentThumbnail={currentThumbnail || undefined}
+                transitionThumbnail={transitionThumbnail || undefined}
+                className="w-full"
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Audio player */}
-      {transitionURL && (
-        <div className="px-6 mt-2">
-          <div className="w-full max-w-2xl mx-auto -translate-y-1/3">
-            <AudioPlayer src={transitionURL} title={title} className="w-full" />
+        {/* Audio player */}
+        {transitionURL && (
+          <div className="px-6">
+            <div className="w-full max-w-2xl mx-auto">
+              <AudioPlayer
+                src={transitionURL}
+                title={title}
+                className="w-full"
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

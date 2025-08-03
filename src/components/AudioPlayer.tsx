@@ -3,27 +3,29 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import {
   Play,
   Pause,
   SkipBack,
   SkipForward,
   Volume2,
   VolumeX,
+  Download,
 } from "lucide-react";
 
 interface AudioPlayerProps {
   src: string;
-  thumbnailUrl?: string;
   title?: string;
   className?: string;
 }
 
-export const AudioPlayer = ({
-  src,
-  thumbnailUrl,
-  title,
-  className,
-}: AudioPlayerProps) => {
+export const AudioPlayer = ({ src, title, className }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -100,27 +102,28 @@ export const AudioPlayer = ({
     }
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = src;
+    link.download = "dj_transition.mp3";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Your transition has been downloaded successfully!");
+  };
+
   return (
     <div
       className={cn(
-        "w-full max-w-2xl bg-card rounded-lg shadow-lg p-4",
+        "w-full max-w-2xl bg-card rounded-lg shadow-lg p-4 mb-12",
         className
       )}
     >
-      {/* Thumbnail and Title */}
-      <div className="flex items-center gap-4 mb-4">
-        {thumbnailUrl && (
-          <img
-            src={thumbnailUrl}
-            alt={title || "Song thumbnail"}
-            className="w-16 h-16 rounded-md object-cover"
-          />
-        )}
-        <div className="flex-1">
-          <h3 className="font-semibold text-foreground">
-            {title || "Now Playing"}
-          </h3>
-        </div>
+      {/* Title */}
+      <div className="mb-8 mt-5">
+        <h3 className="font-semibold text-foreground text-center">
+          {title || "Now Playing"}
+        </h3>
       </div>
 
       {/* Audio Controls */}
@@ -175,28 +178,47 @@ export const AudioPlayer = ({
           </Button>
         </div>
 
-        {/* Volume Control */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleMute}
-            className="h-8 w-8"
-          >
-            {isMuted ? (
-              <VolumeX className="h-4 w-4" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
-            )}
-          </Button>
-          <Slider
-            value={[isMuted ? 0 : volume * 100]}
-            min={0}
-            max={100}
-            step={1}
-            onValueChange={(value) => setVolume(value[0] / 100)}
-            className="w-24"
-          />
+        {/* Volume Control and Download */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className="h-8 w-8"
+            >
+              {isMuted ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+            <Slider
+              value={[isMuted ? 0 : volume * 100]}
+              min={0}
+              max={100}
+              step={1}
+              onValueChange={(value) => setVolume(value[0] / 100)}
+              className="w-24"
+            />
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleDownload}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download transition</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

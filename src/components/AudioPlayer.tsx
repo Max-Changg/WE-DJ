@@ -3,12 +3,20 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import {
   Play,
   Pause,
   SkipBack,
   SkipForward,
   Volume2,
   VolumeX,
+  Download,
 } from "lucide-react";
 
 interface AudioPlayerProps {
@@ -94,6 +102,16 @@ export const AudioPlayer = ({ src, title, className }: AudioPlayerProps) => {
     }
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = src;
+    link.download = "dj_transition.mp3";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Your transition has been downloaded successfully!");
+  };
+
   return (
     <div
       className={cn(
@@ -160,28 +178,47 @@ export const AudioPlayer = ({ src, title, className }: AudioPlayerProps) => {
           </Button>
         </div>
 
-        {/* Volume Control */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleMute}
-            className="h-8 w-8"
-          >
-            {isMuted ? (
-              <VolumeX className="h-4 w-4" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
-            )}
-          </Button>
-          <Slider
-            value={[isMuted ? 0 : volume * 100]}
-            min={0}
-            max={100}
-            step={1}
-            onValueChange={(value) => setVolume(value[0] / 100)}
-            className="w-24"
-          />
+        {/* Volume Control and Download */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className="h-8 w-8"
+            >
+              {isMuted ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+            <Slider
+              value={[isMuted ? 0 : volume * 100]}
+              min={0}
+              max={100}
+              step={1}
+              onValueChange={(value) => setVolume(value[0] / 100)}
+              className="w-24"
+            />
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleDownload}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download transition</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

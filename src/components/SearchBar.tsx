@@ -13,7 +13,7 @@ import {
 export type TransitionType =
   | "scratch"
   | "crossfade"
-  | "crazy_crazy_scratch"
+  | "crazy_scratch"
   | "vocals_crossover";
 
 export interface SearchBarProps {
@@ -103,12 +103,12 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
               <DropdownMenuItem
                 onClick={() => {
                   console.log(
-                    "Changing transition type to: crazy_crazy_scratch"
+                    "Changing transition type to: crazy_scratch"
                   );
-                  setTransitionType("crazy_crazy_scratch");
+                  setTransitionType("crazy_scratch");
                 }}
                 className={
-                  transitionType === "crazy_crazy_scratch"
+                  transitionType === "crazy_scratch"
                     ? "bg-accent text-accent-foreground"
                     : ""
                 }

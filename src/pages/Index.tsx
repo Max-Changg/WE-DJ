@@ -19,12 +19,12 @@ const Index = () => {
 
       // First get the UUID
       const searchResponse = await fetch(
-        `http://localhost:8000/api/search_song?query=${encodeURIComponent(
-          query
-        )}+official+audio`,
-        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        // `http://localhost:8000/api/search_song?query=${encodeURIComponent(
         //   query
         // )}+official+audio`,
+        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+          query
+        )}+official+audio`,
         {
           method: "GET",
         }
@@ -39,8 +39,8 @@ const Index = () => {
 
       // Then get the actual audio file
       const audioResponse = await fetch(
-        `http://localhost:8000/api/get_song?uuid=${data.folder}`,
-        // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${data.folder}`,
+        // `http://localhost:8000/api/get_song?uuid=${data.folder}`,
+        `https://we-dj-proxy-production.up.railway.app/api/get_song?uuid=${data.folder}`,
         {
           method: "GET",
           headers: {

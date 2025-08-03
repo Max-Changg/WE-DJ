@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { TransitionDisplay } from "@/components/TransitionDisplay";
+import { LoadingBar } from "@/components/LoadingBar";
 
 interface SearchResponse {
   folder: string;
@@ -11,6 +12,7 @@ interface SearchResponse {
 
 const Index = () => {
   const [transitionURL, setTransitionURL] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [title, setTitle] = useState<string | null>(null);
   const [transitionData, setTransitionData] = useState<{
@@ -33,17 +35,17 @@ const Index = () => {
         const [currentThumbResponse, transitionThumbResponse] =
           await Promise.all([
             fetch(
-              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               // For production:
-              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               {
                 method: "GET",
               }
             ),
             fetch(
-              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               // For production:
-              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               {
                 method: "GET",
               }
@@ -86,9 +88,9 @@ const Index = () => {
     const checkTransition = async () => {
       try {
         const response = await fetch(
-          // `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
+          `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
           // For production:
-          `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`,
+          // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`,
           {
             method: "GET",
           }
@@ -98,6 +100,7 @@ const Index = () => {
           // Transition is ready!
           const blob = await response.blob();
           setTransitionURL(URL.createObjectURL(blob));
+          setIsLoading(false);
           return true; // Success
         }
       } catch (error) {
@@ -122,16 +125,17 @@ const Index = () => {
 
   const handleSearch = async (query: string) => {
     try {
+      setIsLoading(true);
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
-        // `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
-        //   query
-        // )}+official+audio`,
-        // For production:
-        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
+        // For production:
+        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
         {
           method: "GET",
         }
@@ -174,6 +178,15 @@ const Index = () => {
     <div className="min-h-screen bg-background relative">
       {/* Hero section with search */}
       <HeroSection onSearch={handleSearch} />
+
+      {/* Loading Bar */}
+      {isLoading && (
+        <div className="absolute top-[85vh] left-0 right-0 px-6">
+          <div className="w-full max-w-2xl mx-auto">
+            <LoadingBar isComplete={!!transitionURL} />
+          </div>
+        </div>
+      )}
 
       {/* Transition Display */}
       {transitionData && (

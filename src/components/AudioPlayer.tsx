@@ -13,17 +13,11 @@ import {
 
 interface AudioPlayerProps {
   src: string;
-  thumbnailUrl?: string;
   title?: string;
   className?: string;
 }
 
-export const AudioPlayer = ({
-  src,
-  thumbnailUrl,
-  title,
-  className,
-}: AudioPlayerProps) => {
+export const AudioPlayer = ({ src, title, className }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -103,24 +97,15 @@ export const AudioPlayer = ({
   return (
     <div
       className={cn(
-        "w-full max-w-2xl bg-card rounded-lg shadow-lg p-4",
+        "w-full max-w-2xl bg-card rounded-lg shadow-lg p-4 mb-12",
         className
       )}
     >
-      {/* Thumbnail and Title */}
-      <div className="flex items-center gap-4 mb-4">
-        {thumbnailUrl && (
-          <img
-            src={thumbnailUrl}
-            alt={title || "Song thumbnail"}
-            className="w-16 h-16 rounded-md object-cover"
-          />
-        )}
-        <div className="flex-1">
-          <h3 className="font-semibold text-foreground">
-            {title || "Now Playing"}
-          </h3>
-        </div>
+      {/* Title */}
+      <div className="mb-8 mt-5">
+        <h3 className="font-semibold text-foreground text-center">
+          {title || "Now Playing"}
+        </h3>
       </div>
 
       {/* Audio Controls */}

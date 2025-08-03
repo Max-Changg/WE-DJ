@@ -17,59 +17,80 @@ const Index = () => {
     try {
       console.log("Starting search for:", query);
 
-      // First get the UUID
-      const searchResponse = await fetch(
+      const response = await fetch(
+        // For local testing:
         // `http://localhost:8000/api/search_song?query=${encodeURIComponent(
         //   query
         // )}+official+audio`,
+        // For production:
         `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
         {
           method: "GET",
-        }
-      );
-
-      if (!searchResponse.ok) {
-        throw new Error("Failed to get song UUID");
-      }
-
-      const data = (await searchResponse.json()) as SearchResponse;
-      console.log("Got UUID:", data.folder);
-
-      // Then get the actual audio file
-      const audioResponse = await fetch(
-        // `http://localhost:8000/api/get_song?uuid=${data.folder}`,
-        `https://we-dj-proxy-production.up.railway.app/api/get_song?uuid=${data.folder}`,
-        {
-          method: "GET",
           headers: {
-            Accept: "audio/mpeg",
+            Accept: "audio/mpeg, application/json",
           },
         }
       );
 
-      if (!audioResponse.ok) {
-        throw new Error("Failed to fetch audio");
+      if (!response.ok) {
+        throw new Error("Failed to fetch");
       }
 
-      console.log("Got audio response");
-      const thumbnailUrl = audioResponse.headers.get("X-Thumbnail-Url");
-      const songTitle = audioResponse.headers.get("X-Song-Title");
-      console.log("Headers:", { thumbnailUrl, songTitle });
+      const contentType = response.headers.get("Content-Type");
+      console.log("Content type:", contentType);
 
-      const blob = await audioResponse.blob();
-      console.log("Got blob, size:", blob.size);
-      const url = URL.createObjectURL(blob);
+      // If it's JSON, we need to make a second request
+      if (contentType?.includes("application/json")) {
+        const data = (await response.json()) as SearchResponse;
+        console.log("Got UUID:", data.folder);
 
-      // Use the decoded song names if no headers
-      const title =
-        songTitle ||
-        decodeURIComponent(data["current-song"]).replace(".mp3", "");
+        const audioResponse = await fetch(
+          // For local testing:
+          // `http://localhost:8000/api/get_song?uuid=${data.folder}`,
+          // For production:
+          `https://we-dj-proxy-production.up.railway.app/api/get_song?uuid=${data.folder}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "audio/mpeg",
+            },
+          }
+        );
 
-      setThumbnailUrl(thumbnailUrl);
-      setTitle(title);
-      setTransitionURL(url);
+        if (!audioResponse.ok) {
+          throw new Error("Failed to fetch audio");
+        }
+
+        const blob = await audioResponse.blob();
+        const url = URL.createObjectURL(blob);
+        const title = decodeURIComponent(data["current-song"]).replace(
+          ".mp3",
+          ""
+        );
+
+        setThumbnailUrl(null);
+        setTitle(title);
+        setTransitionURL(url);
+      }
+      // If it's MP3, we can use it directly
+      else if (contentType?.includes("audio/mpeg")) {
+        console.log("Got direct audio response");
+        const thumbnailUrl = response.headers.get("X-Thumbnail-Url");
+        const songTitle = response.headers.get("X-Song-Title");
+        console.log("Headers:", { thumbnailUrl, songTitle });
+
+        const blob = await response.blob();
+        console.log("Got blob, size:", blob.size);
+        const url = URL.createObjectURL(blob);
+
+        setThumbnailUrl(thumbnailUrl);
+        setTitle(songTitle);
+        setTransitionURL(url);
+      } else {
+        throw new Error(`Unexpected content type: ${contentType}`);
+      }
     } catch (error) {
       console.error("Search error:", error);
     }

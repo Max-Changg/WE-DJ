@@ -16,9 +16,6 @@ const Index = () => {
         )}+official+audio`,
         {
           method: "GET",
-          headers: {
-            Accept: "audio/mpeg",
-          },
         }
       );
 

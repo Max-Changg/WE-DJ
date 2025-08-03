@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface SearchBarProps {
+export interface SearchBarProps {
   onSearch: (query: string) => void;
   className?: string;
 }

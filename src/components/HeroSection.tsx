@@ -70,9 +70,7 @@ export const HeroSection = ({ onSearch, className }: HeroSectionProps) => {
         <div className="w-full flex flex-col items-center justify-center">
           <SearchBar onSearch={onSearch} className="w-full max-w-2xl mx-auto" />
           {/* Call to action */}
-          <p className="text-muted-foreground mt-4">
-            Start typing the name of any song to find perfect transition matches
-          </p>
+
         </div>
       </div>
     </section>

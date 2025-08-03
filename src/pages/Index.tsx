@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { TransitionDisplay } from "@/components/TransitionDisplay";
+import { LoadingBar } from "@/components/LoadingBar";
 
 interface SearchResponse {
   folder: string;
@@ -11,6 +12,7 @@ interface SearchResponse {
 
 const Index = () => {
   const [transitionURL, setTransitionURL] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [title, setTitle] = useState<string | null>(null);
   const [transitionData, setTransitionData] = useState<{
@@ -98,6 +100,7 @@ const Index = () => {
           // Transition is ready!
           const blob = await response.blob();
           setTransitionURL(URL.createObjectURL(blob));
+          setIsLoading(false);
           return true; // Success
         }
       } catch (error) {
@@ -122,6 +125,7 @@ const Index = () => {
 
   const handleSearch = async (query: string) => {
     try {
+      setIsLoading(true);
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
@@ -174,6 +178,15 @@ const Index = () => {
     <div className="min-h-screen bg-background relative">
       {/* Hero section with search */}
       <HeroSection onSearch={handleSearch} />
+
+      {/* Loading Bar */}
+      {isLoading && (
+        <div className="absolute top-[85vh] left-0 right-0 px-6">
+          <div className="w-full max-w-2xl mx-auto">
+            <LoadingBar isComplete={!!transitionURL} />
+          </div>
+        </div>
+      )}
 
       {/* Transition Display */}
       {transitionData && (

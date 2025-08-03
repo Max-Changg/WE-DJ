@@ -33,17 +33,17 @@ const Index = () => {
         const [currentThumbResponse, transitionThumbResponse] =
           await Promise.all([
             fetch(
-              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               // For production:
-              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`
+              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
               {
                 method: "GET",
               }
             ),
             fetch(
-              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               // For production:
-              // `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`
+              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
               {
                 method: "GET",
               }
@@ -86,9 +86,9 @@ const Index = () => {
     const checkTransition = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
+          // `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
           // For production:
-          // `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`
+          `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`,
           {
             method: "GET",
           }
@@ -125,13 +125,13 @@ const Index = () => {
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
-        `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
+        // `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
+        // For production:
+        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
-        // For production:
-        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
-        //   query
-        // )}+official+audio`
         {
           method: "GET",
         }

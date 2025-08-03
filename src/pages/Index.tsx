@@ -2,6 +2,7 @@ import { useState } from "react";
 import { HeroSection } from "@/components/HeroSection";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { TransitionDisplay } from "@/components/TransitionDisplay";
+import { TransitionType } from "@/components/SearchBar";
 import { LoadingBar } from "@/components/LoadingBar";
 
 interface SearchResponse {
@@ -123,19 +124,22 @@ const Index = () => {
     poll(); // Start polling
   };
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (
+    query: string,
+    transitionType: TransitionType
+  ) => {
     try {
       setIsLoading(true);
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
         // `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
-          // query
-        // )}+official+audio`,
+        //   query
+        // )}+official+audio&transition_type=${transitionType}`,
         // For production:
         `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
           query
-        )}+official+audio`,
+        )}+official+audio&transition_type=${transitionType}`,
         {
           method: "GET",
         }

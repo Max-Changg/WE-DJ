@@ -33,10 +33,14 @@ const Index = () => {
         const [currentThumbResponse, transitionThumbResponse] =
           await Promise.all([
             fetch(
-              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`
+              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`,
+              // For production:
+              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=current`
             ),
             fetch(
-              `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`
+              // `http://127.0.0.1:8000/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`,
+              // For production:
+              `https://we-dj-proxy-production.up.railway.app/api/get_thumbnail?song_uuid=${folderUuid}&thumbnail_type=transition`
             ),
           ]);
 
@@ -76,7 +80,9 @@ const Index = () => {
     const checkTransition = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`
+          // `http://127.0.0.1:8000/api/get_song?song_uuid=${folderUuid}`,
+          // For production:
+          `https://we-dj-proxy-production.up.railway.app/api/get_song?song_uuid=${folderUuid}`
         );
 
         if (response.ok) {
@@ -110,7 +116,11 @@ const Index = () => {
       console.log("Starting search for:", query);
 
       const searchResponse = await fetch(
-        `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
+        // `http://127.0.0.1:8000/api/search_song?query=${encodeURIComponent(
+        //   query
+        // )}+official+audio`,
+        // For production:
+        `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`
       );
@@ -127,10 +137,9 @@ const Index = () => {
         ".mp3",
         ""
       );
-      const transitionSongName = decodeURIComponent(
-        data["transition-song"]
-      ).replace(".mp3", "").replace(" (Audio)", "");
-        
+      const transitionSongName = decodeURIComponent(data["transition-song"])
+        .replace(".mp3", "")
+        .replace(" (Audio)", "");
 
       setTransitionData({
         folderUuid: data.folder,

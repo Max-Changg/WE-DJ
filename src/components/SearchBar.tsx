@@ -79,6 +79,11 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
                   console.log("Changing transition type to: scratch");
                   setTransitionType("scratch");
                 }}
+                className={
+                  transitionType === "scratch"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
               >
                 Scratch
               </DropdownMenuItem>
@@ -87,6 +92,11 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
                   console.log("Changing transition type to: crossfade");
                   setTransitionType("crossfade");
                 }}
+                className={
+                  transitionType === "crossfade"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
               >
                 Crossfade
               </DropdownMenuItem>
@@ -97,6 +107,11 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
                   );
                   setTransitionType("crazy_crazy_scratch");
                 }}
+                className={
+                  transitionType === "crazy_crazy_scratch"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
               >
                 Crazy Scratch
               </DropdownMenuItem>
@@ -105,6 +120,11 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
                   console.log("Changing transition type to: vocals_crossover");
                   setTransitionType("vocals_crossover");
                 }}
+                className={
+                  transitionType === "vocals_crossover"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
               >
                 Vocals Crossover
               </DropdownMenuItem>

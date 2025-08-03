@@ -11,7 +11,8 @@ const Index = () => {
     try {
       const response = await fetch(
         // `http://localhost:8000/api/search_song?query=${encodeURIComponent(
-          `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        // `https://we-dj-proxy-production.up.railway.app/api/search_song?query=${encodeURIComponent(
+        `http://76.71.171.219:56134/api/search_song?query=${encodeURIComponent(
           query
         )}+official+audio`,
         {

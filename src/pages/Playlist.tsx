@@ -5,7 +5,7 @@ import { AudioPlayer } from "@/components/AudioPlayer";
 import { useState } from "react";
 
 const Playlist = () => {
-  const [playlistFile, setPlaylistFile] = useState<string | null>(null);
+  const [playlistUrl, setPlaylistUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [keyValue, setKeyValue] = useState<string>("");
@@ -13,31 +13,34 @@ const Playlist = () => {
 
   const handleSearch = async (songs: string) => {
     setIsLoading(true);
-    setPlaylistFile(null);
-    const songs_split: string[] = songs.split(",");
+    setPlaylistUrl(null);
+
+    const songs_split = songs
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     try {
       const response = await fetch(
-        `https://we-dj-proxy-production.up.railway.app/api/create_playlist`,
+        "https://we-dj-proxy-production.up.railway.app/api/create_playlist",
         {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ songs: songs_split }),
         }
       );
 
+      if (!response.ok) throw new Error("Failed to create playlist");
+
       const folder_uuid = await response.json();
 
-      const response2 = await fetch(
-        `https://we-dj-proxy-production.up.railway.app/api/get_playlist?playlist_uuid=${folder_uuid}`,
-        {
-          method: "GET",
-        }
+      // Instead of fetching the file blob, just store the URL for streaming
+      setPlaylistUrl(
+        `https://we-dj-proxy-production.up.railway.app/api/get_playlist?playlist_uuid=${folder_uuid}`
       );
-
-      const blob = await response2.blob();
-      setPlaylistFile(URL.createObjectURL(blob));
-      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -83,8 +86,8 @@ const Playlist = () => {
                 <ArrowBigRight />
               </Button>
             </div>
-            {playlistFile && (
-              <AudioPlayer src={playlistFile} className="self-center" />
+            {playlistUrl && (
+              <AudioPlayer src={playlistUrl} className="self-center" />
             )}
           </div>
         ))}

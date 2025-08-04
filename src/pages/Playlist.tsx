@@ -14,16 +14,7 @@ const Playlist = () => {
   const handleSearch = async (songs: string) => {
     setIsLoading(true);
     setPlaylistFile(null);
-    let songs_split: string[] = [];
-    if (keyValue == "wedj") {
-      songs_split = songs
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0)
-        .slice(0, 10);
-    } else {
-      songs_split = songs.split(",");
-    }
+    const songs_split: string[] = songs.split(",");
     try {
       const response = await fetch(
         `https://we-dj-proxy-production.up.railway.app/api/create_playlist`,

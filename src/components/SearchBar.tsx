@@ -103,7 +103,7 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
               <DropdownMenuItem
                 onClick={() => {
                   console.log(
-                    "Changing transition type to: crazy_scratch"
+                    "Changing transition type to: scratch 2"
                   );
                   setTransitionType("crazy_scratch");
                 }}
@@ -113,7 +113,7 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
                     : ""
                 }
               >
-                Crazy Scratch
+                Scratch 2
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {

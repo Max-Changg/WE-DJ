@@ -25,7 +25,7 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [transitionType, setTransitionType] =
-    useState<TransitionType>("scratch");
+    useState<TransitionType>("crossfade");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -74,19 +74,7 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => {
-                  console.log("Changing transition type to: scratch");
-                  setTransitionType("scratch");
-                }}
-                className={
-                  transitionType === "scratch"
-                    ? "bg-accent text-accent-foreground"
-                    : ""
-                }
-              >
-                Scratch
-              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => {
                   console.log("Changing transition type to: crossfade");
@@ -100,6 +88,35 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
               >
                 Crossfade
               </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log("Changing transition type to: scratch");
+                  setTransitionType("scratch");
+                }}
+                className={
+                  transitionType === "scratch"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
+              >
+                Scratch
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem
+                onClick={() => {
+                  console.log("Changing transition type to: vocals_crossover");
+                  setTransitionType("vocals_crossover");
+                }}
+                className={
+                  transitionType === "vocals_crossover"
+                    ? "bg-accent text-accent-foreground"
+                    : ""
+                }
+              >
+                Vocals Crossover
+              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => {
                   console.log(
@@ -115,19 +132,8 @@ export const SearchBar = ({ onSearch, className }: SearchBarProps) => {
               >
                 Scratch 2
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  console.log("Changing transition type to: vocals_crossover");
-                  setTransitionType("vocals_crossover");
-                }}
-                className={
-                  transitionType === "vocals_crossover"
-                    ? "bg-accent text-accent-foreground"
-                    : ""
-                }
-              >
-                Vocals Crossover
-              </DropdownMenuItem>
+
+              
             </DropdownMenuContent>
           </DropdownMenu>
           <Button

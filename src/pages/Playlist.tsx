@@ -26,7 +26,7 @@ const Playlist = () => {
     }
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/create_playlist`,
+        `https://we-dj-proxy-production.up.railway.app/api/create_playlist`,
         {
           method: "POST",
           body: JSON.stringify({ songs: songs_split }),
@@ -36,7 +36,7 @@ const Playlist = () => {
       const folder_uuid = await response.json();
 
       const response2 = await fetch(
-        `http://127.0.0.1:8000/api/get_playlist?playlist_uuid=${folder_uuid}`,
+        `https://we-dj-proxy-production.up.railway.app/api/get_playlist?playlist_uuid=${folder_uuid}`,
         {
           method: "GET",
         }
